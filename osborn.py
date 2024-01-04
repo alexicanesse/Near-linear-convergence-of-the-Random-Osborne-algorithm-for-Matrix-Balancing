@@ -110,7 +110,6 @@ class MatrixBalancer:
             raise ValueError("Invalid method. Please choose from 'cyclic', 'random_cyclic', 'greedy', or 'random'.")
         while criterion >= self._epsilon:
             criterion = self._balancing_criterion()
-            print(criterion)
             self._update_x()
             self._update_balanced()
 

@@ -1,0 +1,96 @@
+\documentclass[a4paper,dvipsnames, 11pt]{article}
+\usepackage{latexsym}
+\usepackage{amsmath}
+%\usepackage{mathspec}
+%\usepackage{amsthm}
+% \usepackage{amssymb}
+% \usepackage{textcomp} 
+% \usepackage{ulem}
+% % \usepackage{fontspec}     
+\usepackage[british]{babel}
+\usepackage{enumitem}
+% \usepackage{pifont}
+\usepackage[a4paper, margin=1.2in]{geometry}
+\usepackage{hyperref}
+\usepackage[dvipsnames, table]{xcolor}
+\usepackage{tikz}
+% \usepackage{mathrsfs}
+
+% \usepackage{eucal}
+\usepackage{dsfont}
+% \usepackage[most]{tcolorbox}
+% \usepackage{mathdots}
+\usepackage{minted} %? used for code-integration
+% \usepackage{titling}
+\usepackage[bibitemsep=100pt, citestyle=alphabetic,bibstyle=alphabetic]{biblatex}
+
+\definecolor{darkmagenta}{RGB}{99,0,99}
+\hypersetup{
+    colorlinks,
+    citecolor=darkmagenta,
+    filecolor=darkmagenta,
+    linkcolor=darkmagenta,
+    urlcolor=darkmagenta
+} %? Change hyperlink's styles
+
+%%%%%%%%%%%%%%? courbes
+\usepackage{amsfonts,amscd}
+\usepackage{pgfplots}
+%%%%%%%%%%%%%?
+
+%%%%%%%%%%%%%
+\DeclareMathOperator{\mat}{Mat}
+\DeclareMathOperator{\card}{Card}
+\DeclareMathOperator{\len}{len}
+\DeclareMathOperator{\erf}{erf}
+%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%
+\newcommand{\dt}{\mathrm{d}}
+\newcommand{\un}{\mathds1}
+\renewcommand{\o}{\scriptstyle\mathcal{O}}
+\renewcommand{\O}{\mathcal{O}}
+\renewcommand{\emptyset}{\varnothing}
+\newcommand{\lbd}{\lambda}
+\renewcommand{\phi}{\varphi}
+\def\inte #1 #2 { [\![#1,#2]\!] }
+%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\Q}{\mathbb{Q}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\M}{\mathcal{M}}
+\renewcommand{\r}{\mathcal{R}}
+\renewcommand{\S}{\mathcal{S}}
+%%%%%%%%%%%%%
+
+
+\renewcommand{\arraystretch}{1.4} %? For better matrix
+\renewcommand{\thesection}{\arabic{section}} %? Roman number for sections
+
+
+\newenvironment{code}{
+    \VerbatimEnvironment
+    \begin{minted}[mathescape,
+        linenos,
+        numbersep=5pt,
+        gobble=2,
+        frame=lines,
+        framesep=2mm]{cpp}%
+}{
+        \end{minted}%
+}
+
+    \setcounter{secnumdepth}{4}
+    \setcounter{tocdepth}{4}
+
+\hbadness=10000
+\vbadness=10000
+\flushbottom

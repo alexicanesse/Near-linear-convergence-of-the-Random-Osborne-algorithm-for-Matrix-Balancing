@@ -1,0 +1,213 @@
+\input{preambule.tex}
+\addbibresource{rapport.bib}
+\usepackage{tkz-base}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{wrapfig}
+\usepackage{subcaption}
+\usepackage{changepage}
+\usepackage[]{tocbibind}
+\usepackage[useregional]{datetime2}
+\usepackage{adjustbox}
+\usepackage{pdfpages}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{cleveref}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage[multiple]{footmisc}
+\usepackage[minNoteWidth=1cm,
+    colorinlistoftodos,
+    backgroundcolor=magenta!30!white,
+    bordercolor=magenta]{luatodonotes}
+\usepackage{amssymb}
+
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{s}{>{\hsize=.3\hsize\linewidth=\hsize}C}
+\newcolumntype{D}{>{\hsize=.4\hsize\linewidth=\hsize}C} %Double width column
+
+\setlength{\bibhang}{0pt}
+
+\defbibenvironment{bibliography}
+{\list
+{\printtext[labelalphawidth]{\printfield{labelprefix}\printfield{labelalpha}}}% Updated line
+{\setlength{\labelwidth}{\labelalphawidth}% Updated line
+\setlength{\leftmargin}{0pt}%
+\setlength{\labelsep}{\biblabelsep}%
+\setlength{\itemsep}{\bibitemsep}%
+\setlength{\itemsep}{0pt}% Set to 0pt to remove vertical space
+\setlength{\parsep}{\bibparsep}}%
+\renewcommand*{\makelabel}[1]{\hss\hspace{\dimexpr\labelalphawidth+\labelsep}##1}}
+{\endlist}
+{\item}
+
+% Redefine the footnotetext command to remove indentation
+\makeatletter
+\renewcommand\@makefntext[1]{%
+    \noindent\makebox[0em][r]{\@thefnmark\hspace{5pt}}#1}
+\makeatother
+
+\newcommand{\reftodo}[1][]{\todo[backgroundcolor=green!30!white, bordercolor=green, #1]{\thesubsubsection{}~Ref} {\color{red} REF}}
+\newcommand{\missingtext}[1][]{\todo[inline, caption=\thesubsection~Fill missing text, backgroundcolor=cyan!30!white, bordercolor=cyan]{#1}}
+%\usepackage[]{todonotes}
+
+\setlength\parindent{0pt}
+
+\usetikzlibrary {shapes.multipart}
+
+\makeatletter
+\newenvironment{fixedfigure}
+{\def\@captype{figure}\center}
+{\endcenter}
+\makeatother
+
+
+
+% \usepackage{graphicx,txfonts}
+
+\addto\captionsbritish{
+    \renewcommand{\contentsname}%
+    {Table of content}%
+}
+
+\renewcommand{\today}{\number\day\textsuperscript{\scriptsize\text{th}} \DTMenglishmonthname{\month} \number\year}
+
+
+\makeatletter
+\newcommand\setxveclength[5]{% newmacro, node1, node2
+    \pgfpointdiff{#2}{#3}
+    \edef#1{\the\pgf@x}
+}
+\makeatother
+
+\sloppy                  
+
+\pgfplotsset{compat=1.16}
+
+\begin{document}
+
+
+%\setmathfont{Latin Modern Math}
+%\setmathfont[range={\mathscr,\mathbfscr}]{XITS Math}
+
+% \maketitle
+
+
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Random Osborne Algorithm for Matrix Balancing}
+            
+        \vspace{0.5cm}
+        \LARGE
+        Optimal transport report
+            
+        \vspace{2.5cm}
+            
+        \huge {\sc Alexi Canesse\footnote{\href{mailto:alexi.canesse@ens-lyon.fr}{alexi.canesse@ens-lyon.fr}, ENS de Lyon, France}\footnote{\href{mailto:alexi.canesse@ens-paris-saclay.fr}{alexi.canesse@ens-paris-saclay.fr}, ENS Paris-Saclay, France}}\\\Large
+            
+        \vfill
+
+        Optimal transport course\\
+        Part of the MVA program at ENS Paris-Saclay.
+            
+        \vspace{2cm}
+        \includegraphics[width=0.5\textwidth]{"./figures/logo.pdf"}
+        \vspace{2cm}
+
+        \Large
+        Computer Science and Mathematics\\
+        École Normale Supérieur Paris-Saclay\\
+        Orsay, France\\
+        \today
+            
+    \end{center}
+\end{titlepage}
+
+
+
+
+
+\newpage
+
+%\tableofcontents
+\makeatletter
+\section*{Table of content}
+\vspace{.05\textwidth}
+\@starttoc{toc}
+\thispagestyle{empty} % Remove page number from the ToC page
+\clearpage % Start the new page without page number
+
+\setcounter{page}{1} % Reset page counter and set page number to 1
+
+\makeatother
+\newpage
+
+\vspace*{10pt}
+\begin{adjustwidth}{30pt}{30pt}
+    \textit{\todo{Abstract (½ page): 
+    What problem(s) is studied? 
+    Why is it relevant? 
+    What solution(s) is proposed? 
+    Which contributions (theory, numerics, etc) ? }
+        Accurate physics simulations can be computationally expensive due to the requirement of fine meshes.
+        However, a cost-effective approach involves reducing the mesh size while retaining crucial features required
+        for the simulation.
+        Some of these features are conveniently represented in the spectra of Laplacians operators defined on the mesh.
+        There exists a coarsening method that filters out unnecessary spectral bands.
+        The challenge lies in determining which spectral bands are important for the simulation, as \textbf{this information is
+        largely unknown}.
+    }\\
+
+    \textit{
+        To address this, we propose a \textbf{novel approach} to guide the coarsening process using \textbf{insights
+        from physical simulations}.
+        By learning the spectral subspaces that significantly influence the simulation outcomes, we can create a coarse
+        mesh that retains the characteristics essential for an accurate simulation.
+        Main contributions are:
+        \begin{itemize}
+            \item A novel spectral optimization method for coarsening, with physical simulations in mind.
+            \item Understanding importance of spectral subspaces: By understanding the spectral subspaces that contribute
+            the most to the simulations, we gain valuable insights into the underlying physics and behavior of the system.
+            \item Faster simulation times: The reduced mesh size leads to a considerable speed-up in the simulation
+            process, making it more efficient and feasible for practical applications.
+        \end{itemize}
+    }
+\end{adjustwidth}
+\vspace*{10pt}
+
+\section{Introduction (3 pages)}
+
+\subsection{Presentation of the problem}
+
+\subsection{Related work}
+Previous works (at least a few citations). If relevant, include things that you have seen during the MVA course (or possibly other courses). 
+
+\subsection{Contributions}
+Contributions. Why is the studied method different/better/worse/etc. than existing previous works. 
+
+\section{Main body (10 pages)}
+
+\subsection{Presentation of the method}
+Include variants etc
+
+\subsection{Theoretical guarantees}
+
+\subsection{Numerics}
+
+\section{Conclusion and perspective}
+
+Summary of the result obtained: pros and cons (limitation, problems, error in the articles, etc)
+Possible improvement/extension
+
+\section{Connexion with the course}
+
+MANDATORY SECTION:. What are the notions/results/algorithms presented in the course that are used or related to the one presented in this paper?
+
+\end{document}
+
+

@@ -7,6 +7,9 @@ try:
 except ImportError:
     has_cuda = False
 
+# Value used to avoid overflows
+MAX_VALUE = 1e1
+
 
 class MatrixBalancer:
     def __init__(self, matrix, epsilon=1e-6, device='cpu'):
@@ -61,17 +64,29 @@ class MatrixBalancer:
         if self._device == 'gpu' and has_cuda:
             c_k = cp.sum(self._balanced_matrix[:, k])
             r_k = cp.sum(self._balanced_matrix[k, :])
-            self._x[k] += .5 * (cp.log(c_k) - cp.log(r_k))
+
+            if c_k and r_k:
+                self._x[k] += .5 * (cp.log(c_k) - cp.log(r_k))
+            elif c_k == 0:
+                self._x[k] = -np.inf
+            else: # r_k == 0
+                self._x[k] = np.inf
         else:
             c_k = np.sum(self._balanced_matrix[:, k])
             r_k = np.sum(self._balanced_matrix[k, :])
-            self._x[k] += .5 * (np.log(c_k) - np.log(r_k))
+
+            if c_k and r_k:
+                self._x[k] += .5 * (np.log(c_k) - np.log(r_k))
+            elif c_k == 0:
+                self._x[k] = -np.inf 
+            else: # r_k == 0
+                self._x[k] = np.inf
     
     def _update_balanced(self):
         if self._device == 'gpu' and has_cuda:
-            self._balanced_matrix = cp.diag(cp.exp(self._x)) @ self._original_matrix @ cp.diag(cp.exp(- self._x))
+            self._balanced_matrix = cp.diag(cp.clip(cp.clip(self._x, -MAX_VALUE, MAX_VALUE))) @ self._original_matrix @ cp.diag(cp.exp(cp.clip(-self._x, -MAX_VALUE, MAX_VALUE)))
         else:
-            self._balanced_matrix = np.diag(np.exp(self._x)) @ self._original_matrix @ np.diag(np.exp(- self._x))
+            self._balanced_matrix = np.diag(np.exp(np.clip(self._x, -MAX_VALUE, MAX_VALUE))) @ self._original_matrix @ np.diag(np.exp(np.clip(-self._x, -MAX_VALUE, MAX_VALUE)))
 
     def _update(self):
         if not(self._next_updates):
@@ -108,10 +123,14 @@ class MatrixBalancer:
             self._update_method = self._random_update
         else:
             raise ValueError("Invalid method. Please choose from 'cyclic', 'random_cyclic', 'greedy', or 'random'.")
-        while criterion >= self._epsilon:
-            criterion = self._balancing_criterion()
+        
+        i = 30
+        while criterion >= self._epsilon and i:
+            i -= 1
             self._update_x()
             self._update_balanced()
+            criterion = self._balancing_criterion()
+            #print("Criterion", criterion)
 
         return self._balanced_matrix
 

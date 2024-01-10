@@ -15,7 +15,9 @@
 \usepackage[dvipsnames, table]{xcolor}
 \usepackage{tikz}
 % \usepackage{mathrsfs}
-
+\usepackage{cleveref}
+\usepackage{caption}
+\usepackage{listings}
 % \usepackage{eucal}
 \usepackage{dsfont}
 % \usepackage[most]{tcolorbox}
@@ -33,6 +35,8 @@
     urlcolor=darkmagenta
 } %? Change hyperlink's styles
 
+\setlist[itemize,1]{label=\(\color{magenta}\bullet\)}
+
 %%%%%%%%%%%%%%? courbes
 \usepackage{amsfonts,amscd}
 \usepackage{pgfplots}
@@ -43,6 +47,7 @@
 \DeclareMathOperator{\card}{Card}
 \DeclareMathOperator{\len}{len}
 \DeclareMathOperator{\erf}{erf}
+\DeclareMathOperator{\argmax}{argmax}
 %%%%%%%%%%%%%
 
 
@@ -54,12 +59,13 @@
 \renewcommand{\emptyset}{\varnothing}
 \newcommand{\lbd}{\lambda}
 \renewcommand{\phi}{\varphi}
-\def\inte #1 #2 { [\![#1,#2]\!] }
+\def\inte#1 #2 { [\![#1,#2]\!] }
 %%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%
 \newcommand{\N}{\mathbb{N}}
+\newcommand{\D}{\mathbb{D}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\C}{\mathbb{C}}
@@ -76,20 +82,41 @@
 \renewcommand{\thesection}{\arabic{section}} %? Roman number for sections
 
 
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+
+% Define theorem-like environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{notation}{Notation}[section]
+\newtheorem{remark}{Remark}[section]
+
+% Custom commands for convenience
+\newcommand{\thm}[1]{\begin{theorem}#1\end{theorem}}
+\newcommand{\lem}[1]{\begin{lemma}#1\end{lemma}}
+\newcommand{\defn}[1]{\begin{definition}#1\end{definition}}
+\newcommand{\nota}[1]{\begin{notation}#1\end{notation}}
+\newcommand{\rem}[1]{\begin{remark}#1\end{remark}}
+
+% Use cleverref for enhanced referencing
+\crefname{theorem}{theorem}{theorems}
+\crefname{lemma}{lemma}{lemmas}
+\crefname{definition}{definition}{definitions}
+\crefname{remark}{remark}{remarks}
+
 \newenvironment{code}{
-    \VerbatimEnvironment
-    \begin{minted}[mathescape,
+    \VerbatimEnvironment\begin{minted}[mathescape,
         linenos,
         numbersep=5pt,
         gobble=2,
         frame=lines,
-        framesep=2mm]{cpp}%
+        escapeinside=||,
+        framesep=2mm]{python}%
 }{
         \end{minted}%
 }
-
-    \setcounter{secnumdepth}{4}
-    \setcounter{tocdepth}{4}
 
 \hbadness=10000
 \vbadness=10000

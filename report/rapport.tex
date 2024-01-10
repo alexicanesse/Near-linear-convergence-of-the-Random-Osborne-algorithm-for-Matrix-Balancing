@@ -30,8 +30,7 @@
 \setlength{\bibhang}{0pt}
 
 \defbibenvironment{bibliography}
-{\list
-{\printtext[labelalphawidth]{\printfield{labelprefix}\printfield{labelalpha}}}% Updated line
+{\list{\printtext[labelalphawidth]{\printfield{labelprefix}\printfield{labelalpha}}}% Updated line
 {\setlength{\labelwidth}{\labelalphawidth}% Updated line
 \setlength{\leftmargin}{0pt}%
 \setlength{\labelsep}{\biblabelsep}%
@@ -54,7 +53,7 @@
 
 \setlength\parindent{0pt}
 
-\usetikzlibrary {shapes.multipart}
+\usetikzlibrary{shapes.multipart}
 
 \makeatletter
 \newenvironment{fixedfigure}
@@ -116,7 +115,7 @@
         Part of the MVA program at ENS Paris-Saclay.
             
         \vspace{2cm}
-        \includegraphics[width=0.5\textwidth]{"./figures/logo.pdf"}
+        \includegraphics[width=0.5\textwidth]{./figures/logo.pdf}
         \vspace{2cm}
 
         \Large
@@ -148,66 +147,154 @@
 \newpage
 
 \vspace*{10pt}
-\begin{adjustwidth}{30pt}{30pt}
-    \textit{\todo{Abstract (½ page): 
-    What problem(s) is studied? 
+\todo[inline, caption={Abstract}]{Abstract (½ page): 
+    What problems is studied? 
     Why is it relevant? 
-    What solution(s) is proposed? 
-    Which contributions (theory, numerics, etc) ? }
-        Accurate physics simulations can be computationally expensive due to the requirement of fine meshes.
-        However, a cost-effective approach involves reducing the mesh size while retaining crucial features required
-        for the simulation.
-        Some of these features are conveniently represented in the spectra of Laplacians operators defined on the mesh.
-        There exists a coarsening method that filters out unnecessary spectral bands.
-        The challenge lies in determining which spectral bands are important for the simulation, as \textbf{this information is
-        largely unknown}.
-    }\\
+    What solutions is proposed? 
+    Which contributions (theory, numerics, etc)? }
+% \begin{adjustwidth}{30pt}{30pt}
+%     \textit{
+%         Accurate physics simulations can be computationally expensive due to the requirement of fine meshes.
+%         However, a cost-effective approach involves reducing the mesh size while retaining crucial features required
+%         for the simulation.
+%         Some of these features are conveniently represented in the spectra of Laplacians operators defined on the mesh.
+%         There exists a coarsening method that filters out unnecessary spectral bands.
+%         The challenge lies in determining which spectral bands are important for the simulation, as \textbf{this information is
+%         largely unknown}.
+%     }\\
 
-    \textit{
-        To address this, we propose a \textbf{novel approach} to guide the coarsening process using \textbf{insights
-        from physical simulations}.
-        By learning the spectral subspaces that significantly influence the simulation outcomes, we can create a coarse
-        mesh that retains the characteristics essential for an accurate simulation.
-        Main contributions are:
-        \begin{itemize}
-            \item A novel spectral optimization method for coarsening, with physical simulations in mind.
-            \item Understanding importance of spectral subspaces: By understanding the spectral subspaces that contribute
-            the most to the simulations, we gain valuable insights into the underlying physics and behavior of the system.
-            \item Faster simulation times: The reduced mesh size leads to a considerable speed-up in the simulation
-            process, making it more efficient and feasible for practical applications.
-        \end{itemize}
-    }
-\end{adjustwidth}
+%     \textit{
+%         To address this, we propose a \textbf{novel approach} to guide the coarsening process using \textbf{insights
+%         from physical simulations}.
+%         By learning the spectral subspaces that significantly influence the simulation outcomes, we can create a coarse
+%         mesh that retains the characteristics essential for an accurate simulation.
+%         Main contributions are:
+%         \begin{itemize}
+%             \item A novel spectral optimization method for coarsening, with physical simulations in mind.
+%             \item Understanding importance of spectral subspaces: By understanding the spectral subspaces that contribute
+%             the most to the simulations, we gain valuable insights into the underlying physics and behavior of the system.
+%             \item Faster simulation times: The reduced mesh size leads to a considerable speed-up in the simulation
+%             process, making it more efficient and feasible for practical applications.
+%         \end{itemize}
+%     }
+% \end{adjustwidth}
 \vspace*{10pt}
 
 \section{Introduction (3 pages)}
 
+\cite{altschuler2023near}
+
 \subsection{Presentation of the problem}
 
-\subsection{Related work}
-Previous works (at least a few citations). If relevant, include things that you have seen during the MVA course (or possibly other courses). 
+\todo[inline]{Introduce the reasons to do this alg}
 
-\subsection{Contributions}
-Contributions. Why is the studied method different/better/worse/etc. than existing previous works. 
+\nota{Let \(c\) and \(r\) respectively be the column-wise sum and the row-wise sum of matrices \textit{ie.}
+\[
+    c : \left\{\begin{array}{rcl}
+        \M_{n,m}(\K) & \to &\K\\
+        A & \mapsto &  A^\top \mathbf{1}
+    \end{array}\right. \quad \text{and} \quad r: \left\{\begin{array}{rcl}
+        \M_{n,m}(\K) & \to &\K\\
+        A & \mapsto & A \mathbf{1}.
+    \end{array}\right.
+\]}
+
+\defn{Let \(A \in \M_n(\R_+)\) be a non negative square matrix, \(\varepsilon \geq 0\) and \(k \in \N^\star\). The matrix \(A\) is \((\varepsilon, k\)\)-balanced if 
+\[
+    \dfrac{||c(A) - r(A)||_k}{\sum_{i,j} a_{i,j}} \leq 0.
+\]
+Furthermore, if \(A\) is \((0, k)\)-balanced, we say that \(A\) is balanced\todo{Use 2.3 to explain it using convex opti}.}
+
+\defn{The \(\varepsilon, k\)-\textbf{approximate matrix balancing problem} is\todo{Use real formal definition from 2.1}: given a square non-negative matrix \(K \in \M_n(\R_+)\), \(\varepsilon \geq 0\) and \(k \in \N^\star\), find a positive diagonal matrix \(D \in \mathcal D_n(\R_+^\star)\) such that \(DKD^{-1}\) is \((\varepsilon, k)\)-balanced.}
+
+\subsection{Related work}
+Previous works (at least a few citations). If relevant, include things that you have seen during the MVA course (or possibly other courses). \\
+
+Osborn algorithm introduced in\cite{osborne1960pre, parlett1971balancing} and defaut in Scipy.\\
+
+\cite{chen2000balancing, chen2001preconditioning} improve accuracy of computation of eigen vectors, eigen values.\\
+
+there are corner cases where balancing can actually worsen the conditioning.~\cite{watkins2006case} also~\cite{james2014matrix} in which they explain it and explain how to modify LAPACK to avoid it.\\
+
+The standard matrix balancing algorithm is the Sinkhorn-Knopp algorithm~\cite{sinkhorn1967concerning}, a special case of Bregman’s balancing method~\cite{lamond1981bregman} that iterates rescaling of each row and column until convergence.
+However, the algorithm converges linearly \cite{soules1991rate}, which is prohibitively slow for recently emerging large and sparse matrices.\\
+
+\cite{parlett1971balancing} -> approximately balance matrices with a diagonal with only powers of 2. Advantage : no floating point error in computing the balanced matrix on base two computers. approximately ``good enough''\\
+
+\cite{sugiyama2017tensor} -> matrix balancing on tensors 
+
+
+\subsection{Contributions of the paper}
+
+Their main contribution is \cref{main_thm}. It exhibits a variant of \textsc{Osborn}'s algorithm with near-linear runtime in the input sparsity. It also shows that improving the runtime dependence in \(\varepsilon\) can be improve from \(\varepsilon^{-2}\) to \(\varepsilon^{-1}\) without an additional factor \(n\).  
+
+\thm{\label{main_thm}Let \(K \in \M_n(\R_+)\) be a balanceable non negative square matrix and \(\varepsilon \geq 0\). Random \textsc{Osborn} solves \((\varepsilon, 1)\)-approximate matrix balancing problem in \(T\) operations where there exists \(c > 0, \delta > 0\) such that 
+\[
+    \mathbb E(T) = \mathcal O \left(\dfrac{m}{\varepsilon}\min\left\{\dfrac{1}{\varepsilon}; d\right\} \log \kappa\right)  \quad \text{and} \quad \mathbb P \left(T \leq c \dfrac{m}{\varepsilon}\min\left\{\dfrac{1}{\varepsilon}; d\right\} \log \kappa \log \dfrac{1}{\delta}\right) \geq 1 - \delta
+\]
+where \(m\) is the number of nonzero entries in \(K\), \(d\) is the diameter of the graph associated to \(K\) and \(\kappa = \sum_{i,j}K_{i,j}/\min_{i,j}{K_{i,j}}\).}
+
+\subsection{Our contributions}
+
+numerics?
+limits? 
 
 \section{Main body (10 pages)}
 
+\subsection{Notations}
+
 \subsection{Presentation of the method}
-Include variants etc
+
+
+\begin{code}
+osborn(|\(K\)|, |\(\varepsilon\)|):
+    x = 0 |\(\in \R^n\)|
+    while not(is_balanced(|\(\D(e^x) K \D(e^{-x})\)|, |\(\varepsilon\)|)):
+        Choose k |\(\in\)| [n] # This is where variants differ
+        x += (log(c_k(|\(\D(e^x) K \D(e^{-x})\)|)) - log(r_k(|\(\D(e^x) K \D(e^{-x})\)|)))/2
+    return x
+\end{code}
+
+There are \textit{many} way to choose the next coordinate to update and hence many variants of the algorithm. The article focuses on four of them:
+\begin{itemize}
+    \item \textbf{Cyclic \textsc{Osborn}} Cycle through the coordinates. (\textit{eg.} {\color{magenta}1, 2, 3}, {\color{cyan}1, 2, 3}, {\color{red}1,} \dots).
+    \item \textbf{Random-Reshuffle Cyclic \textsc{Osborn}} Cycle through the coordinates using a new random permutation for each cycle. (\textit{eg.} {\color{magenta}2, 1, 3}, {\color{cyan}1, 2, 3}, {\color{red}1, 3, 2}, \dots).
+    \item \textbf{Greedy \textsc{Osborn}} Choose \(k\) where the imbalance is maximal \textit{eg.}
+    \[
+        k = \argmax_{k}\left|\sqrt{r_k(\D(e^x) K \D(e^{-x}))} - \sqrt{c_k(\D(e^x) K \D(e^{-x}))}\right|.    
+    \]
+    \item \textbf{Random \textsc{Osborn}} Uniformly sample \(k\) independently between each call.
+\end{itemize}
+
+\todo[inline, caption={code availibility}]{Talk about the implementation}
 
 \subsection{Theoretical guarantees}
 
 \subsection{Numerics}
 
+it indeed converges even with high sparsity (cf theorem)
+
+\subsubsection{Sparsity}
+
+We conducted numerical experiments to investigate the behavior of Osborn's algorithm in the presence of varying numbers of zero entries within randomly generated matrices. Each matrix has a size of (10, 10) with uniformly distributed values in the range [0, 1]. The number of zero entries in the matrices was systematically varied. Our objective was to assess the algorithm's ability to find solutions even with a small number of non-zero inputs, as proven in [ref].
+
+The experiment involved measuring the execution time of Osborn's algorithm for each matrix, with the time recorded as a function of the number of zero entries. This exploration aimed to provide insights into the near-linear convergence time of the algorithm, shedding light on its performance characteristics under different sparsity levels. These results contribute valuable empirical evidence to support the theoretical findings presented in [ref]."
+
+\todo[inline, caption={Link with convex opti}]{Use obeservation 2.5 to compare with other convex optim algorithms.}
+
+\todo[inline, caption={Per iteration}]{Look at per iteration runtime (5.2)}
+
 \section{Conclusion and perspective}
 
 Summary of the result obtained: pros and cons (limitation, problems, error in the articles, etc)
-Possible improvement/extension
+Possible improvement/extension 
 
 \section{Connexion with the course}
 
 MANDATORY SECTION:. What are the notions/results/algorithms presented in the course that are used or related to the one presented in this paper?
 
+\listoftodos{}
+
+\printbibliography[heading=bibintoc]
+
 \end{document}
-
-

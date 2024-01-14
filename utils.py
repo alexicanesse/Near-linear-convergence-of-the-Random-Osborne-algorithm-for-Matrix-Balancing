@@ -34,16 +34,28 @@ def generate_sparse_matrix(n, m, device='gpu'):
 
 
 def generate_matrix_params(n, m, kappa, device='gpu'):
-    density = m/(n**2)
-    matrix = scipy.sparse.random(n, n, density=density).toarray()
+    # m < kappa is mandatory otherwise it cannot work due to the definition of kappa
+    if m > kappa:
+        raise ValueError("Error: kappa should be greater than or equal to m.")
+    
 
-    #####
-    # we solve for x : (sum(K) + m * x)/(K_min + x) = kappa
-    # to get = kappa * (K_min + x) = (sum(K) + m * x)
-    # so : x = (kappa * K_min - sum(K)) / (m - kappa)
-    #####
-    additive_constant = (kappa * np.min(matrix[matrix != 0]) - np.sum(matrix)) / (m - kappa)
-    matrix[matrix != 0] += additive_constant
+    density = m/(n**2)
+
+    # We need to generate a non negative matrix
+    while True:
+        matrix = scipy.sparse.random(n, n, density=density)
+        matrix.data = np.random.laplace(loc=0.0, scale=1.0, size=matrix.data.shape)
+        matrix = matrix.toarray()
+
+        #####
+        # we solve for x : (sum(K) + m * x)/(K_min + x) = kappa
+        # to get = kappa * (K_min + x) = (sum(K) + m * x)
+        # so : x = (kappa * K_min - sum(K)) / (m - kappa)
+        #####
+        additive_constant = (kappa * np.min(matrix[matrix != 0]) - np.sum(matrix)) / (m - kappa)
+        matrix[matrix != 0] += additive_constant
+        if np.all(matrix >= 0):
+            break
 
     if device == 'gpu' and has_cuda:
         return cp.array(matrix)

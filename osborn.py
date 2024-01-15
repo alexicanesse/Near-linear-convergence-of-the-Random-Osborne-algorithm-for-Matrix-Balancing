@@ -20,7 +20,7 @@ class MatrixBalancer:
         self._next_updates = []
         self._update_method = ...
 
-        self._matrix = matrix.copy()
+        self._matrix = matrix.asformat("csr")
         self._x = scipy.sparse.csr_array(np.eye(self._n))
         self._x_inv = scipy.sparse.csr_array(np.eye(self._n))
 

@@ -27,19 +27,19 @@
 \newcolumntype{s}{>{\hsize=.3\hsize\linewidth=\hsize}C}
 \newcolumntype{D}{>{\hsize=.4\hsize\linewidth=\hsize}C} %Double width column
 
-\setlength{\bibhang}{0pt}
+% \setlength{\bibhang}{0pt}
 
-\defbibenvironment{bibliography}
-{\list{\printtext[labelalphawidth]{\printfield{labelprefix}\printfield{labelalpha}}}% Updated line
-{\setlength{\labelwidth}{\labelalphawidth}% Updated line
-\setlength{\leftmargin}{0pt}%
-\setlength{\labelsep}{\biblabelsep}%
-\setlength{\itemsep}{\bibitemsep}%
-\setlength{\itemsep}{0pt}% Set to 0pt to remove vertical space
-\setlength{\parsep}{\bibparsep}}%
-\renewcommand*{\makelabel}[1]{\hss\hspace{\dimexpr\labelalphawidth+\labelsep}##1}}
-{\endlist}
-{\item}
+% \defbibenvironment{bibliography}
+% {\list{\printtext[labelalphawidth]{\printfield{labelprefix}\printfield{labelalpha}}}% Updated line
+% {\setlength{\labelwidth}{\labelalphawidth}% Updated line
+% \setlength{\leftmargin}{0pt}%
+% \setlength{\labelsep}{\biblabelsep}%
+% \setlength{\itemsep}{\bibitemsep}%
+% \setlength{\itemsep}{0pt}% Set to 0pt to remove vertical space
+% \setlength{\parsep}{\bibparsep}}%
+% \renewcommand*{\makelabel}[1]{\hss\hspace{\dimexpr\labelalphawidth+\labelsep}##1}}
+% {\endlist}
+% {\item}
 
 % Redefine the footnotetext command to remove indentation
 \makeatletter
@@ -121,7 +121,8 @@
         \Large
         Computer Science and Mathematics\\
         École Normale Supérieur Paris-Saclay\\
-        Orsay, France\\
+        École Normale Supérieur de Lyon\\
+        Paris, France\\
         \today
             
     \end{center}
@@ -186,7 +187,9 @@
 
 \subsection{Presentation of the problem}
 
-\todo[inline]{Introduce the reasons to do this alg}
+The matrix balancing problem arises from the recognition that matrices encountered in practical applications may have varying scales across rows and columns. These imbalances can lead to numerical instability and adversely impact the accuracy of numerical computations such as eigenvalues/eigenvectors decomposition~\cite{chen2000balancing, chen2001preconditioning} or solving linear systems~\cite{chen2001preconditioning}, . Matrix balancing algorithms aim to address these issues by adjusting the scaling of rows and columns, thereby enhancing the overall numerical properties of the matrix.\\
+
+Other problems can be reduced to matrix balancing, which gives direct applications. For instance, in optimal transport with problems where decision variables are probability distributions~\cite{altschuler2022transport}; the approximating Min-Mean-Cycle which can be solved in near-linear runtime in the number of edges~\cite{altschuler2022approximating} using results from matrix balancing and in particular, the main result of the studied article. 
 
 \nota{Let \(c\) and \(r\) respectively be the column-wise sum and the row-wise sum of matrices \textit{ie.}
 \[
@@ -200,29 +203,24 @@
 \]}
 
 \defn{Let \(A \in \M_n(\R_+)\) be a non negative square matrix, \(\varepsilon \geq 0\) and \(k \in \N^\star\). The matrix \(A\) is \((\varepsilon, k\)\)-balanced if 
-\[
+\begin{align}\label{norm}
     \dfrac{||c(A) - r(A)||_k}{\sum_{i,j} a_{i,j}} \leq 0.
-\]
-Furthermore, if \(A\) is \((0, k)\)-balanced, we say that \(A\) is balanced\todo{Use 2.3 to explain it using convex opti}.}
+\end{align}
+Furthermore, if \(A\) is \((0, k)\)-balanced, we say that \(A\) is balanced.}
 
-\defn{The \(\varepsilon, k\)-\textbf{approximate matrix balancing problem} is\todo{Use real formal definition from 2.1}: given a square non-negative matrix \(K \in \M_n(\R_+)\), \(\varepsilon \geq 0\) and \(k \in \N^\star\), find a positive diagonal matrix \(D \in \mathcal D_n(\R_+^\star)\) such that \(DKD^{-1}\) is \((\varepsilon, k)\)-balanced.}
+\defn{The \(\varepsilon, k\)-\textbf{approximate matrix balancing problem} is: given a square non-negative matrix \(K \in \M_n(\R_+)\), \(\varepsilon \geq 0\) and \(k \in \N^\star\), find a vector \(x \in \R^n\) such that \(\mathcal D(e^x)K\mathcal D(e^{x})\) is \((\varepsilon, k)\)-balanced.}
 
 \subsection{Related work}
-Previous works (at least a few citations). If relevant, include things that you have seen during the MVA course (or possibly other courses). \\
 
-Osborn algorithm introduced in\cite{osborne1960pre, parlett1971balancing} and defaut in Scipy.\\
+\paragraph*{Iterative algorithms} The \txtsc{Osborn} algorithm, introduced by \txtsc{Osborn} in \cite{osborne1960pre} and later discussed in~\cite{parlett1971balancing}, is implemented in Scipy as a default matrix balancing method. Other iterative methods have been introduces. Notably, the \textsc{Sinkhorn-Knopp} algorithm~\cite{sinkhorn1967concerning}, a special case of \textsc{Bregman}’s balancing method~\cite{lamond1981bregman}, iteratively rescales each row and column until convergence. However, it converges linearly, which is impractical for large and sparse matrices, as discussed by \textsc{Soules} et al. in~\cite{soules1991rate}. \textsc{Parlett} introduced an approach in~\cite{parlett1971balancing} to approximately balance matrices by ensuring the diagonal consists only of powers of 2. The advantage of this method is the elimination of floating-point errors when computing the balanced matrix on base-two computers, making it ``good enough'' in practice. Some efforts are also made to compare balancing algorithms on real use cases~\cite{schneider1990comparative}.
 
-\cite{chen2000balancing, chen2001preconditioning} improve accuracy of computation of eigen vectors, eigen values.\\
+\paragraph*{Issues in Matrix Balancing} While matrix balancing is generally effective, there are corner cases where it can worsen the conditioning of matrices. \textsc{Watkins} et al. highlighted some of these cases in~\cite{watkins2006case}. Additionally, \textsc{James} et al. explained, in~\cite{james2014matrix}, these issues and proposed modifications to LAPACK to mitigate them.
 
-there are corner cases where balancing can actually worsen the conditioning.~\cite{watkins2006case} also~\cite{james2014matrix} in which they explain it and explain how to modify LAPACK to avoid it.\\
+\paragraph*{Theoretical bounds}  \cite{kalantari1996complexity} establishes an upper bound on the norm of the scaling factors and presents a polynomial-time complexity bound for the computation of scaling factors with a prescribed accuracy.
 
-The standard matrix balancing algorithm is the Sinkhorn-Knopp algorithm~\cite{sinkhorn1967concerning}, a special case of Bregman’s balancing method~\cite{lamond1981bregman} that iterates rescaling of each row and column until convergence.
-However, the algorithm converges linearly \cite{soules1991rate}, which is prohibitively slow for recently emerging large and sparse matrices.\\
+\paragraph*{Characterizations of Non-Negative Balancable Matrices} \cite{osborne1960pre} and \cite{eaves1985line} offer characterizations of non-negative balancable matrices, contributing to the theoretical understanding of the properties of such matrices. Additionally, \cite{kalantari1997complexity} provides insights into the complexity aspects of this problem.
 
-\cite{parlett1971balancing} -> approximately balance matrices with a diagonal with only powers of 2. Advantage : no floating point error in computing the balanced matrix on base two computers. approximately ``good enough''\\
-
-\cite{sugiyama2017tensor} -> matrix balancing on tensors 
-
+\paragraph*{Tensor Matrix Balancing} \textsc{Sugiyama} et al. extended matrix balancing to tensors in~\cite{sugiyama2017tensor}, providing a perspective on balancing operations in multi-dimensional spaces. This work contributes to the broader understanding of matrix balancing techniques applied beyond traditional matrices.
 
 \subsection{Contributions of the paper}
 
@@ -238,6 +236,7 @@ where \(m\) is the number of nonzero entries in \(K\), \(d\) is the diameter of 
 
 numerics?
 limits? 
+optimization ?
 
 \section{Main body (10 pages)}
 
@@ -266,19 +265,126 @@ There are \textit{many} way to choose the next coordinate to update and hence ma
     \item \textbf{Random \textsc{Osborn}} Uniformly sample \(k\) independently between each call.
 \end{itemize}
 
-\todo[inline, caption={code availibility}]{Talk about the implementation}
+\subsubsection{Implementation}
+
+The implementations were carried out in Python, providing us with a transparent and customizable framework for thorough experimentation. The source code for our implementations is available on \href{https://github.com/alexicanesse/Near-linear-convergence-of-the-Random-Osborne-algorithm-for-Matrix-Balancing}{GitHub}. The implementation uses sparse representation for matrices and aimed to provide an implementation using data structures as close as possible as those used to compute the theoretical results. However, we were not able to find a detailed presentation of those and had to do our best to match the article. We did not give any focus on bit complexity. The authors recommanded a log-domain implementation to enable a logarithmic bit-complexity for some variants. However, we decided not to follow through in order to increase speed because we did not worry about bit-complexity.\\
+
+At each update of \(x\), we update the balanced matrix by multiplying the corresponding row and column. With the sparse representation, this operation is proportional to \(m\). It is even \(\mathcal O(m/n)\) on average! To compute the optimization function, the sum of elements in \(DAD^{-1}\) is computed in \(\mathcal O (m)\) thanks to the sparse representation and \(||c(A) - r(A)||_1\) is also computed in \(\mathcal O(m)\). Indeed, we use \(||c(A) - r(A)||_1 = \sum_j \left| \sum_i (DAD^{-1} - (DAD^{-1})^\top)_{i,j}\right|\). \textbf{Those techniques are not presented in the article and we had to come up with on our own.}\\
+
+\subsection{Matrix balancing as a convex optimization problem}
+
+A key part of the proofs of convergence given on the paper and other works rely mainly on a seeing the matrix balancing problem as an optimization problem. Let \(\Phi : x \mapsto \log \sum_{i,j} e^{x_i - x_j} K_{i,j}\). The gradient of this function is 
+\[
+    \nabla \Phi (x) = \dfrac{r\left( \mathcal D(e^x)K\mathcal D(e^{x}) \right) - c\left( \mathcal D(e^x)K\mathcal D(e^{x}) \right)}{\sum_{i,j}\left( \mathcal D(e^x)K\mathcal D(e^{x}) \right)_{i,j}}.    
+\]
+
+We can clearly notice a connection with \cref{norm} and see that \(x\) is a solution to the \(\varepsilon, k\)-matrix balancing problem if and only if \(||\nabla \Phi(x)||_k \leq \varepsilon\). The function \(\Phi\) is convex and approximately solving the convex optimization problem \(\min_x \Phi(x)\) solves the matrix balancing problem.\\
+
+Alexandre d'Aspremont says in his MVA course on convex optimization that writing a problem as a convex optimization problem is almost solving it, which shows how important this statement is.
 
 \subsection{Theoretical guarantees}
 
+\begin{lemma}\label{balanceability}
+    A matrix \(K \in \mathcal M_n(\R_+^\star)\) is balanceable if and only if its associated graph is strongly connected~\cite{osborne1960pre}.
+\end{lemma}
+
+\thm{\label{greedy_thm}Let \(K \in \M_n(\R_+)\) be a balanceable non negative square matrix and \(\varepsilon \geq 0\). Greedy \textsc{Osborn} solves \((\varepsilon, 1)\)-approximate matrix balancing problem in 
+\[
+    \mathcal O \left(\dfrac{\color{magenta} n^2}{\varepsilon}\min\left\{\dfrac{1}{\varepsilon}; d\right\} \log \kappa\right) 
+\]
+where \(d\) is the diameter of the graph associated to \(K\) and \(\kappa = \sum_{i,j}K_{i,j}/\min_{i,j}{K_{i,j}}\).}
+
+\thm{\label{main_thm}Let \(K \in \M_n(\R_+)\) be a balanceable non negative square matrix and \(\varepsilon \geq 0\). Random \textsc{Osborn} solves \((\varepsilon, 1)\)-approximate matrix balancing problem in \(T\) operations where there exists \(c > 0, \delta > 0\) such that 
+\[
+    \mathbb E(T) = \mathcal O \left(\dfrac{\color{magenta} m}{\varepsilon}\min\left\{\dfrac{1}{\varepsilon}; d\right\} \log \kappa\right)  \quad \text{and} \quad \mathbb P \left(T \leq c \dfrac{\color{magenta} m}{\varepsilon}\min\left\{\dfrac{1}{\varepsilon}; d\right\} \log \kappa \log \dfrac{1}{\delta}\right) \geq 1 - \delta
+\]
+where \(m\) is the number of nonzero entries in \(K\), \(d\) is the diameter of the graph associated to \(K\) and \(\kappa = \sum_{i,j}K_{i,j}/\min_{i,j}{K_{i,j}}\).}
+
+\thm{\label{random_cyclic_thm}Let \(K \in \M_n(\R_+)\) be a balanceable non negative square matrix and \(\varepsilon \geq 0\). Random cyclic \textsc{Osborn} solves \((\varepsilon, 1)\)-approximate matrix balancing problem in \(T\) operations where there exists \(c > 0, \delta > 0\) such that 
+\[
+    \mathbb E(T) = \mathcal O \left(\dfrac{\color{magenta} mn}{\varepsilon}\min\left\{\dfrac{1}{\varepsilon}; d\right\} \log \kappa\right)  \quad \text{and} \quad \mathbb P \left(T \leq c \dfrac{\color{magenta} mn}{\varepsilon}\min\left\{\dfrac{1}{\varepsilon}; d\right\} \log \kappa \log \dfrac{1}{\delta}\right) \geq 1 - \delta
+\]
+where \(m\) is the number of nonzero entries in \(K\), \(d\) is the diameter of the graph associated to \(K\) and \(\kappa = \sum_{i,j}K_{i,j}/\min_{i,j}{K_{i,j}}\).}
+
 \subsection{Numerics}
 
-it indeed converges even with high sparsity (cf theorem)
+it indeed converges even with high sparsity (cf theorem)\\
+
+LOOK IN {schneider1990comparative} https://sci-hub.st/10.2307/171357 for inspiration on applications\\
+
+per iteration runtime (1.3)
+
+\subsubsection{Data generation}\label{data_genaration}
+
+In order to conduct numerical experiments, it is useful to be able to generate matrices with given parameters such as value of \(\kappa\) and sparsity. For that, we start by generating a \((n,n)\) random matrix with \(m\) non-zero values using \mintinline{python}{scipy.sparse.random}. Then we assign values to those non-zero entries according to a \textsc{exponential} distribution of scale 1. We then want to modify those values to get the expected value for \(\kappa\). To do so, we add a value \(x\) to all non-zeros entries. If the generated matrix was \(K\), to find \(x\), we solve 
+\[
+    \kappa = \dfrac{\sum_{i,j} K_{i,j} + m \times x}{K_{\text{min}} + x}.
+\]        
+
+We then find that the value to add is 
+\[
+    x = \dfrac{\kappa \times K_\text{min} - \sum_{i,j}K_{i,j}}{m - \kappa}.   
+\]
+
+Sometimes, \(x\) is negative and \(K\) end up not being non-negative and we just start again from the start. Finally, we want the matrix to be balanceable. Hence, we start again until its associated graph is strongly connected (\cref{balanceability}). 
+
+\subsubsection{Complexity as a function of \(n\)}
+
+
+\subsubsection{Complexity as a function of \(m\)}
+
+
+\subsubsection{Complexity as a function of \(kappa\)}
 
 \subsubsection{Sparsity}
 
-We conducted numerical experiments to investigate the behavior of Osborn's algorithm in the presence of varying numbers of zero entries within randomly generated matrices. Each matrix has a size of (10, 10) with uniformly distributed values in the range [0, 1]. The number of zero entries in the matrices was systematically varied. Our objective was to assess the algorithm's ability to find solutions even with a small number of non-zero inputs, as proven in [ref].
+We conducted numerical experiments to investigate the behaviour of Osborn's algorithm in the presence of varying numbers of zero entries within randomly generated matrices. The goal is to experimentally see how tight the bounds provided in the article are.\\
 
-The experiment involved measuring the execution time of Osborn's algorithm for each matrix, with the time recorded as a function of the number of zero entries. This exploration aimed to provide insights into the near-linear convergence time of the algorithm, shedding light on its performance characteristics under different sparsity levels. These results contribute valuable empirical evidence to support the theoretical findings presented in [ref]."
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_100}
+        \caption{\(\kappa=100\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_1000}
+        \caption{\(\kappa=10^3\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_1000000}
+        \caption{\(\kappa=10^6\)}
+    \end{subfigure}
+    \caption{Plot of \(\text{avg}(\text{time}/(n \min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using the random cyclic variation with \(\varepsilon = 10^{-4}\). Matrices are generated according to the framework presented in \cref{data_genaration}. For \(n = 10\) and values of \(m\) in \(\inte 20  {n} \), we generate 100 matrices of size \(n\) and sparsity \(m\) for different fixed values of \(\kappa\).}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_100.pdf}
+        \caption{\(\kappa=100\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_1000.0.pdf}
+        \caption{\(\kappa=10^3\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_1000000.0.pdf}
+        \caption{\(\kappa=10^6\)}
+    \end{subfigure}
+    \caption{Plot of \(\text{avg}(\text{time}/(\min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using the random variation with \(\varepsilon = 10^{-4}\). Matrices are generated according to the framework presented in \cref{data_genaration}. For \(n = 10\) and values of \(m\) in \(\inte 20  {n} \), we generate 100 matrices of size \(n\) and sparsity \(m\) for different fixed values of \(\kappa\).}
+\end{figure}
+
+
 
 \todo[inline, caption={Link with convex opti}]{Use obeservation 2.5 to compare with other convex optim algorithms.}
 
@@ -295,6 +401,7 @@ MANDATORY SECTION:. What are the notions/results/algorithms presented in the cou
 
 \listoftodos{}
 
+\newpage
 \printbibliography[heading=bibintoc]
 
 \end{document}

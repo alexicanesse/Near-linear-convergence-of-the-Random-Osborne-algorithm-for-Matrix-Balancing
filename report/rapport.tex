@@ -212,7 +212,7 @@ Furthermore, if \(A\) is \((0, k)\)-balanced, we say that \(A\) is balanced.}
 
 \subsection{Related work}
 
-\paragraph*{Iterative algorithms} The \txtsc{Osborn} algorithm, introduced by \txtsc{Osborn} in \cite{osborne1960pre} and later discussed in~\cite{parlett1971balancing}, is implemented in Scipy as a default matrix balancing method. Other iterative methods have been introduces. Notably, the \textsc{Sinkhorn-Knopp} algorithm~\cite{sinkhorn1967concerning}, a special case of \textsc{Bregman}’s balancing method~\cite{lamond1981bregman}, iteratively rescales each row and column until convergence. However, it converges linearly, which is impractical for large and sparse matrices, as discussed by \textsc{Soules} et al. in~\cite{soules1991rate}. \textsc{Parlett} introduced an approach in~\cite{parlett1971balancing} to approximately balance matrices by ensuring the diagonal consists only of powers of 2. The advantage of this method is the elimination of floating-point errors when computing the balanced matrix on base-two computers, making it ``good enough'' in practice. Some efforts are also made to compare balancing algorithms on real use cases~\cite{schneider1990comparative}.
+\paragraph*{Iterative algorithms} The \txtsc{Osborn} algorithm, introduced by \textsc{Osborn} in \cite{osborne1960pre} and later discussed in~\cite{parlett1971balancing}, is implemented in Scipy as a default matrix balancing method. Other iterative methods have been introduces. Notably, the \textsc{Sinkhorn-Knopp} algorithm~\cite{sinkhorn1967concerning}, a special case of \textsc{Bregman}’s balancing method~\cite{lamond1981bregman}, iteratively rescales each row and column until convergence. However, it converges linearly, which is impractical for large and sparse matrices, as discussed by \textsc{Soules} et al. in~\cite{soules1991rate}. \textsc{Parlett} introduced an approach in~\cite{parlett1971balancing} to approximately balance matrices by ensuring the diagonal consists only of powers of 2. The advantage of this method is the elimination of floating-point errors when computing the balanced matrix on base-two computers, making it ``good enough'' in practice. Some efforts are also made to compare balancing algorithms on real use cases~\cite{schneider1990comparative}.
 
 \paragraph*{Issues in Matrix Balancing} While matrix balancing is generally effective, there are corner cases where it can worsen the conditioning of matrices. \textsc{Watkins} et al. highlighted some of these cases in~\cite{watkins2006case}. Additionally, \textsc{James} et al. explained, in~\cite{james2014matrix}, these issues and proposed modifications to LAPACK to mitigate them.
 
@@ -224,7 +224,7 @@ Furthermore, if \(A\) is \((0, k)\)-balanced, we say that \(A\) is balanced.}
 
 \subsection{Contributions of the paper}
 
-Their main contribution is \cref{main_thm}. It exhibits a variant of \textsc{Osborn}'s algorithm with near-linear runtime in the input sparsity. It also shows that improving the runtime dependence in \(\varepsilon\) can be improve from \(\varepsilon^{-2}\) to \(\varepsilon^{-1}\) without an additional factor \(n\).  
+Their main contribution is \Cref{main_thm}. It exhibits a variant of \textsc{Osborn}'s algorithm with near-linear runtime in the input sparsity. It also shows that improving the runtime dependence in \(\varepsilon\) can be improve from \(\varepsilon^{-2}\) to \(\varepsilon^{-1}\) without an additional factor \(n\).  
 
 \thm{\label{main_thm}Let \(K \in \M_n(\R_+)\) be a balanceable non negative square matrix and \(\varepsilon \geq 0\). Random \textsc{Osborn} solves \((\varepsilon, 1)\)-approximate matrix balancing problem in \(T\) operations where there exists \(c > 0, \delta > 0\) such that 
 \[
@@ -278,11 +278,11 @@ A key part of the proofs of convergence given on the paper and other works rely 
     \nabla \Phi (x) = \dfrac{r\left( \mathcal D(e^x)K\mathcal D(e^{x}) \right) - c\left( \mathcal D(e^x)K\mathcal D(e^{x}) \right)}{\sum_{i,j}\left( \mathcal D(e^x)K\mathcal D(e^{x}) \right)_{i,j}}.    
 \]
 
-We can clearly notice a connection with \cref{norm} and see that \(x\) is a solution to the \(\varepsilon, k\)-matrix balancing problem if and only if \(||\nabla \Phi(x)||_k \leq \varepsilon\). The function \(\Phi\) is convex and approximately solving the convex optimization problem \(\min_x \Phi(x)\) solves the matrix balancing problem.\\
+We can clearly notice a connection with \Cref{norm} and see that \(x\) is a solution to the \(\varepsilon, k\)-matrix balancing problem if and only if \(||\nabla \Phi(x)||_k \leq \varepsilon\). The function \(\Phi\) is convex and approximately solving the convex optimization problem \(\min_x \Phi(x)\) solves the matrix balancing problem.\\
 
 Alexandre d'Aspremont says in his MVA course on convex optimization that writing a problem as a convex optimization problem is almost solving it, which shows how important this statement is.
 
-\subsection{Theoretical guarantees}
+\subsection{Theoretical guarantees}\label{theoritical}
 
 \begin{lemma}\label{balanceability}
     A matrix \(K \in \mathcal M_n(\R_+^\star)\) is balanceable if and only if its associated graph is strongly connected~\cite{osborne1960pre}.
@@ -308,11 +308,13 @@ where \(m\) is the number of nonzero entries in \(K\), \(d\) is the diameter of 
 
 \subsection{Numerics}
 
-it indeed converges even with high sparsity (cf theorem)\\
+Computing numeric experiments was not easy. Getting the actual number of arithmetic operations is a complex endeavour, especially with a high-level language such as Python. We decided do use the running time to estimate how the number of arithmetic operations will evolve as a function of given parameters. This is not a precise measurement. However, all algorithms presented are are basically the same and this measure should be a fair assessment of convergence speed. 
+
+\todo[inline, caption={numerics}]{it indeed converges even with high sparsity (cf theorem)\\
 
 LOOK IN {schneider1990comparative} https://sci-hub.st/10.2307/171357 for inspiration on applications\\
 
-per iteration runtime (1.3)
+per iteration runtime (1.3)}
 
 \subsubsection{Data generation}\label{data_genaration}
 
@@ -326,63 +328,148 @@ We then find that the value to add is
     x = \dfrac{\kappa \times K_\text{min} - \sum_{i,j}K_{i,j}}{m - \kappa}.   
 \]
 
-Sometimes, \(x\) is negative and \(K\) end up not being non-negative and we just start again from the start. Finally, we want the matrix to be balanceable. Hence, we start again until its associated graph is strongly connected (\cref{balanceability}). 
+Sometimes, \(x\) is negative and \(K\) end up not being non-negative and we just start again from the start. Finally, we want the matrix to be balanceable. Hence, we start again until its associated graph is strongly connected (\Cref{balanceability}). 
 
 \subsubsection{Complexity as a function of \(n\)}
+
+In order to experimentally show the convergence speed of theorems presented in~\Cref{theoritical}, we fixed the parameters \(m\) and \(\varepsilon\) and let \(n\) in \(\inte 20 60 \). Each matrix is generated using an exponential distribution according to the scheme\footnote{Note that here \(\kappa\) is not fixed.} presented in~\Cref{data_genaration}. The~\Cref{fig:n} shows the results.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/n/random_function_of_n_n_20_60__kappa_55582.80548329922}
+        \caption{Random.}\label{fig:na}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/n/random_cyclic_function_of_n_n_20_60__kappa_300}
+        \caption{Random cyclic.}\label{fig:nb}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/n/greedy_function_of_n_n_20_60__kappa_2602746.9752206216}
+        \caption{Greedy.}\label{fig:nc}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/n/cyclic_function_of_n_n_20_60__kappa_300}
+        \caption{Cyclic.}\label{fig:nd}
+    \end{subfigure}
+    \caption{Plot of \(\text{avg}(\text{time}/(m \min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(n\), using various variations with \(\varepsilon = 10^{-4}\) and \(m = 175\). Matrices are generated according to the framework presented in \Cref{data_genaration}. Forall \(n \in \inte 20 60 \), we generate 10 matrices of size \(n\) and sparsity \(m\).}\label{fig:n}
+\end{figure}
+
+We can assess the convergence depicted in~\Cref{fig:n} by comparing it to the outcomes presented in~\Cref{theoritical}. As outlined in~\Cref{random_cyclic_thm}, our anticipation was a linear progression concerning \(n\) in~\Cref{fig:nb} and~\Cref{fig:nd}. Remarkably, this linear trend is observed, even though it was originally expected only in terms of expectation. Referring to~\Cref{greedy_thm}, an evolution in \(\mathcal O(n^2/m)\) is expected in~\Cref{fig:nc}, and this prediction aligns with the observed outcomes. These numerical results are indeed promising.\\
+
+The final validation involves examining~\Cref{main_thm}, suggesting that~\Cref{fig:na} should remain constant. Contrary to this expectation, the figure does not exhibit constancy. However, the growth rate is noticeably lower compared to the other variants, and there appears to be a tendency for the curve to plateau as \(n\) increases which is encouraging.
 
 
 \subsubsection{Complexity as a function of \(m\)}
 
+In order to experimentally show the convergence speed of theorems presented in~\Cref{theoritical}, we fixed the parameters \(n\) and \(\varepsilon\) and let \(m\) in \(\inte 60 300 \). Each matrix is generated using an exponential distribution according to the scheme\footnote{Note that here \(\kappa\) is not fixed.} presented in~\Cref{data_genaration}. The~\Cref{fig:m} displays the results.
 
-\subsubsection{Complexity as a function of \(kappa\)}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/m/random_function_of_m_n_10_m_20_90_kappa_524564.1271422369}
+        \caption{Random.}\label{fig:ma}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/m/random_cyclic_function_of_m_n_10_m_20_90_kappa_60194.24212737572}
+        \caption{Random cyclic.}\label{fig:mb}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/m/greedy_function_of_m_n_10_m_20_90_kappa_241790.2230925089}
+        \caption{Greedy.}\label{fig:mc}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/m/cyclic_function_of_m_n_10_m_20_90_kappa_118817.63812510876}
+        \caption{Cyclic.}\label{fig:md}
+    \end{subfigure}
+    \caption{Plot of \(\text{avg}(\text{time}/(\min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using various variations with \(\varepsilon = 10^{-2}\) and \(n = 60\). Matrices are generated according to the framework presented in \Cref{data_genaration}. Forall \(m \in \inte 60 300 \), we generate 10 matrices of size \(n\) and sparsity \(m\).}\label{fig:m}
+\end{figure}
+
+Interpreting the plots in~\Cref{fig:m} using the theorems outlined in~\Cref{theoritical} poses challenges due to intrinsic connections between certain variables, such as \(d\) and \(m\) in the results. The expectation, based on~\Cref{greedy_thm}, is that the plot using the greedy \textsc{Osborn} method should remain flat, indicating no dependence on \(m\). However, contrary to this theoretical expectation, the observed plot does not exhibit this characteristic. A more nuanced understanding is provided by~\Cref{fig:m1}, where the relationship between~\Cref{fig:mc} and~\Cref{fig:m1a} suggests non-monotonic behavior.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.475\textwidth}
+        \centering
+        \includegraphics[width=.75\textwidth]{figures/m/d}
+        \caption{Evolution of \(d\).}\label{fig:m1a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.475\textwidth}
+        \centering
+        \includegraphics[width=.75\textwidth]{figures/m/kappa}
+        \caption{Evolution of \(\log\kappa\).}\label{fig:m1b}
+    \end{subfigure}
+    \caption{Plots of \(\text{avg}(d)\) and \(\text{avg}(\log\kappa)\) as a function of \(m\), using \(n = 60\) and the framework presented in \Cref{data_genaration}. Forall \(m \in \inte 60 300 \), we generate 10 matrices of size \(n\) and sparsity \(m\).}\label{fig:m1}
+\end{figure}
+
+Specifically, as~\Cref{fig:m1a} decreases,~\Cref{fig:mc} increases, and vice versa, elucidating the non-monotonous trend observed. Additionally, insights from~\Cref{fig:m1b} contribute to an understanding of why the scaled time is decreasing overall for the greedy variant. Similar principles apply to the interpretation of the other plots. Notably, the random variant appears to be less affected by overall trends, suggesting a higher dependency on \(m\).\\
+
+Unfortunately, the observed plots do not align with our expectations. They fail to exhibit a clear linear dependency for the three variants, contrary to the anticipated linear relationship.
+
+\subsubsection{Complexity as a function of \(\kappa\)}
 
 \subsubsection{Sparsity}
 
 We conducted numerical experiments to investigate the behaviour of Osborn's algorithm in the presence of varying numbers of zero entries within randomly generated matrices. The goal is to experimentally see how tight the bounds provided in the article are.\\
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_100}
-        \caption{\(\kappa=100\)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_1000}
-        \caption{\(\kappa=10^3\)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_1000000}
-        \caption{\(\kappa=10^6\)}
-    \end{subfigure}
-    \caption{Plot of \(\text{avg}(\text{time}/(n \min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using the random cyclic variation with \(\varepsilon = 10^{-4}\). Matrices are generated according to the framework presented in \cref{data_genaration}. For \(n = 10\) and values of \(m\) in \(\inte 20  {n} \), we generate 100 matrices of size \(n\) and sparsity \(m\) for different fixed values of \(\kappa\).}
-\end{figure}
+% \begin{figure}[H]
+%     \centering
+%     \begin{subfigure}[b]{.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_100}
+%         \caption{\(\kappa=100\)}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_1000}
+%         \caption{\(\kappa=10^3\)}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_1000000}
+%         \caption{\(\kappa=10^6\)}
+%     \end{subfigure}
+%     \caption{Plot of \(\text{avg}(\text{time}/(n \min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using the random cyclic variation with \(\varepsilon = 10^{-4}\). Matrices are generated according to the framework presented in \Cref{data_genaration}. For \(n = 10\) and values of \(m\) in \(\inte 20  {n} \), we generate 100 matrices of size \(n\) and sparsity \(m\) for different fixed values of \(\kappa\).}
+% \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_100.pdf}
-        \caption{\(\kappa=100\)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_1000.0.pdf}
-        \caption{\(\kappa=10^3\)}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_1000000.0.pdf}
-        \caption{\(\kappa=10^6\)}
-    \end{subfigure}
-    \caption{Plot of \(\text{avg}(\text{time}/(\min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using the random variation with \(\varepsilon = 10^{-4}\). Matrices are generated according to the framework presented in \cref{data_genaration}. For \(n = 10\) and values of \(m\) in \(\inte 20  {n} \), we generate 100 matrices of size \(n\) and sparsity \(m\) for different fixed values of \(\kappa\).}
-\end{figure}
+% \begin{figure}[H]
+%     \centering
+%     \begin{subfigure}[b]{.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_100.pdf}
+%         \caption{\(\kappa=100\)}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_1000.0.pdf}
+%         \caption{\(\kappa=10^3\)}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{.32\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_1000000.0.pdf}
+%         \caption{\(\kappa=10^6\)}
+%     \end{subfigure}
+%     \caption{Plot of \(\text{avg}(\text{time}/(\min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using the random variation with \(\varepsilon = 10^{-4}\). Matrices are generated according to the framework presented in \Cref{data_genaration}. For \(n = 10\) and values of \(m\) in \(\inte 20  {n} \), we generate 100 matrices of size \(n\) and sparsity \(m\) for different fixed values of \(\kappa\).}
+% \end{figure}
 
 
 

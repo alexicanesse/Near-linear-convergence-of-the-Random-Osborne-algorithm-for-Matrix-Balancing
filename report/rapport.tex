@@ -310,11 +310,6 @@ where \(m\) is the number of nonzero entries in \(K\), \(d\) is the diameter of 
 
 Computing numeric experiments was not easy. Getting the actual number of arithmetic operations is a complex endeavour, especially with a high-level language such as Python. We decided do use the running time to estimate how the number of arithmetic operations will evolve as a function of given parameters. This is not a precise measurement. However, all algorithms presented are are basically the same and this measure should be a fair assessment of convergence speed. 
 
-\todo[inline, caption={numerics}]{it indeed converges even with high sparsity (cf theorem)\\
-
-LOOK IN {schneider1990comparative} https://sci-hub.st/10.2307/171357 for inspiration on applications\\
-
-per iteration runtime (1.3)}
 
 \subsubsection{Data generation}\label{data_genaration}
 
@@ -423,59 +418,84 @@ Unfortunately, the observed plots do not align with our expectations. They fail 
 
 \subsubsection{Complexity as a function of \(\kappa\)}
 
-\subsubsection{Sparsity}
+Finally, same experiments were ran to showcase the linear dependency in \(\log\kappa\) in theorems outlined in~\Cref{theoritical}. The result, provided in~\Cref{fig:kappa} clearly fails to showcase any dependency in \(\kappa\).
 
-We conducted numerical experiments to investigate the behaviour of Osborn's algorithm in the presence of varying numbers of zero entries within randomly generated matrices. The goal is to experimentally see how tight the bounds provided in the article are.\\
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/kappa/random_function_of_kappa}
+        \caption{Random.}\label{fig:kappaa}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/kappa/random_cyclic_function_of_kappa}
+        \caption{Random cyclic.}\label{fig:kappab}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/kappa/greedy_function_of_kappa}
+        \caption{Greedy.}\label{fig:kappac}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/kappa/cyclic_function_of_kappa}
+        \caption{Cyclic.}\label{fig:kappad}
+    \end{subfigure}
+    \caption{Plot of \(\text{avg}(\text{time}/(\min(d, 1/\varepsilon)/\varepsilon))\) as a function of \(\kappa\), using various variations with \(\varepsilon = 10^{-2}\), \(n = 10\) and \(m = 30\). Matrices are generated according to the framework presented in \Cref{data_genaration}. Forall \(\kappa \in \inte 40 10^6 \), we generate 10 matrices of size \(n\) and sparsity \(m\).}\label{fig:kappa}
+\end{figure}
 
-% \begin{figure}[H]
-%     \centering
-%     \begin{subfigure}[b]{.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_100}
-%         \caption{\(\kappa=100\)}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_1000}
-%         \caption{\(\kappa=10^3\)}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{figures/random_cyclic_n10,m_20_100_kappa_1000000}
-%         \caption{\(\kappa=10^6\)}
-%     \end{subfigure}
-%     \caption{Plot of \(\text{avg}(\text{time}/(n \min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using the random cyclic variation with \(\varepsilon = 10^{-4}\). Matrices are generated according to the framework presented in \Cref{data_genaration}. For \(n = 10\) and values of \(m\) in \(\inte 20  {n} \), we generate 100 matrices of size \(n\) and sparsity \(m\) for different fixed values of \(\kappa\).}
-% \end{figure}
-
-% \begin{figure}[H]
-%     \centering
-%     \begin{subfigure}[b]{.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_100.pdf}
-%         \caption{\(\kappa=100\)}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_1000.0.pdf}
-%         \caption{\(\kappa=10^3\)}
-%     \end{subfigure}
-%     \hfill
-%     \begin{subfigure}[b]{.32\textwidth}
-%         \centering
-%         \includegraphics[width=\textwidth]{figures/random_n10_m_20_100_kappa_1000000.0.pdf}
-%         \caption{\(\kappa=10^6\)}
-%     \end{subfigure}
-%     \caption{Plot of \(\text{avg}(\text{time}/(\min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using the random variation with \(\varepsilon = 10^{-4}\). Matrices are generated according to the framework presented in \Cref{data_genaration}. For \(n = 10\) and values of \(m\) in \(\inte 20  {n} \), we generate 100 matrices of size \(n\) and sparsity \(m\) for different fixed values of \(\kappa\).}
-% \end{figure}
+\subsubsection{Convergence plot}
 
 
 
-\todo[inline, caption={Link with convex opti}]{Use obeservation 2.5 to compare with other convex optim algorithms.}
+\subsubsection{Per iteration runtime}
 
-\todo[inline, caption={Per iteration}]{Look at per iteration runtime (5.2)}
+Only if I have time
+
+\subsection{Applications}
+
+\subsubsection{Displacement Interpolation}
+\cite{peyre2011numerical}
+
+Discrete barycenters 9.4 ?
+
+\subsection{Optimal mass distribution using \textsc{Osborn}}
+
+Given a mass distribution and a cost matrix we can compute optimal mass distribution to the second set
+
+\subsection{Connections between \textsc{Osborn}'s and \textsc{Sinkhorn}'s algorithms}
+
+A connection with \textsc{Sinkhorn}'s Algorithm must be drawn. Those two algorithms compute a scaling of a matrix. The main difference is \textsc{Osborn} returns a scaling of the form \(D A D^{-1}\) whereas \textsc{Sinkhorn} returns a scaling of the form \(XAY\) with \(X\) and \(Y\) diagonals.\\
+
+These two algorithms minimize a distance between two measures. For the first one, it is \textsc{Kullback-Leibler} and for the second one it is \textsc{Hellinger}.\\
+
+\textsc{Sinkhorn} is an optimal transport algorithm, as we have seen in the course. It computes a solution to
+\[
+    \min_{P \in U(a,b)} \left\langle P, C\right\rangle + \varepsilon \text{KL}(P|\un_{n \times m})  
+\]
+using notations from the course. Unlike with \textsc{Osborn}'s algorithm, we do not need to work with square matrices.\\
+
+\textsc{Osborn}'s algorithm does not compute an optimal transport. We tried to modify it to be able to use it to compute optimal transport solutions. However, we failed to do so. It still has some advantages : its scaling has a form that preserves eigenspaces.\\
+
+We still wanted to compare those algorithms and the only way we found is to use that \textsc{Sinkhorn}'s algorithm can be used as a balancing algorithm: we just have to use the same distribution as input and output for it. This comparaison is not fair because \textsc{Sinkhorn}'s additional has more constrains as we impose the value of the sum of the rows and columns and also because it is more versatile in general.
+
+
+
+
+\cite{peyre2011numerical}
+
+
+Approximate solution using Osborn (Can easily compute optimal solution using (1.1))
+
+Osborn before SInkhorn ?
+
+
+Osborn as a measure ? Read about Sinkhorn as a measure ?
+
 
 \section{Conclusion and perspective}
 
@@ -485,6 +505,12 @@ Possible improvement/extension
 \section{Connexion with the course}
 
 MANDATORY SECTION:. What are the notions/results/algorithms presented in the course that are used or related to the one presented in this paper?
+
+Osborn gives solutions valable in the context of \textsc{Kantorovich} discrete relaxation : \(\text{Osborn}(K) \in \bibcup_a U(a,a)\) (does not need to be a permutation). 
+
+Sinkhorn
+
+Unblanced OT
 
 \listoftodos{}
 

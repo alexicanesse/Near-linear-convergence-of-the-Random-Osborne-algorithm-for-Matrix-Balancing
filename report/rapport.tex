@@ -166,7 +166,7 @@ The article we dived into for our project~\cite{altschuler2023near} introduces \
 
 \subsection{Presentation of the problem}
 
-The matrix balancing problem arises from the recognition that matrices encountered in practical applications may have varying scales across rows and columns. These imbalances can lead to numerical instability and adversely impact the accuracy of numerical computations such as eigenvalues/eigenvectors decomposition~\cite{chen2000balancing, chen2001preconditioning} or solving linear systems~\cite{chen2001preconditioning}, . Matrix balancing algorithms aim to address these issues by adjusting the scaling of rows and columns, thereby enhancing the overall numerical properties of the matrix.\\
+The matrix balancing problem arises from the recognition that matrices encountered in practical applications may have varying scales across rows and columns. These imbalances can lead to numerical instability and adversely impact the accuracy of numerical computations such as eigenvalues/eigenvectors decomposition~\cite{chen2000balancing, chen2001preconditioning} or solving linear systems~\cite{chen2001preconditioning}. Matrix balancing algorithms aim to address these issues by adjusting the scaling of rows and columns, thereby enhancing the overall numerical properties of the matrix.\\
 
 Other problems can be reduced to matrix balancing, which gives direct applications. For instance, in optimal transport with problems where decision variables are probability distributions~\cite{altschuler2022transport}; the approximating Min-Mean-Cycle which can be solved in near-linear runtime in the number of edges~\cite{altschuler2022approximating} using results from matrix balancing and in particular, the main result of the studied article. 
 
@@ -181,7 +181,7 @@ Other problems can be reduced to matrix balancing, which gives direct applicatio
     \end{array}\right.
 \]}
 
-\defn{Let \(A \in \M_n(\R_+)\) be a non negative square matrix, \(\varepsilon \geq 0\) and \(k \in \N^\star\). The matrix \(A\) is \((\varepsilon, k\)\)-balanced if 
+\defn{Let \(A \in \M_n(\R_+)\) be a non negative square matrix, \(\varepsilon \geq 0\) and \(k \in \N^\star\). The matrix \(A\) is \((\varepsilon, k)\)-balanced if 
 \begin{align}\label{norm}
     \dfrac{||c(A) - r(A)||_k}{\sum_{i,j} a_{i,j}} \leq \varepsilon.
 \end{align}
@@ -213,47 +213,48 @@ where \(m\) is the number of nonzero entries in \(K\), \(d\) is the diameter of 
 
 \subsection{Our contributions}
 
-numerics?
-limits? 
-optimization ?
+We conducted numerical experiments to empirically validate the theorems established in the original article.\\
 
-\section{Main body (10 pages)}
+We establishment of a meaningful connection between \textsc{Osborn}' and \textsc{Sinkhorn}' algorithms. Through extensive comparative analyses, we identify scenarios where \textsc{Sinkhorn} faces challenges. We showcase \textsc{Osborn}'s consistent convergence across variants and construct a kernel where \textsc{Osborn} excels while \textsc{Sinkhorn} fails to converge, a demonstration of our understanding of their strengths.
+
+\section{Main body}
 
 \subsection{Notations}
-
-Certainly, here is the revised subsection:
 
 For convenience and clarity, we consolidate the notations used throughout our discussions. These notations adhere to standard conventions, ensuring consistency and facilitating a concise representation of key elements:
 
 \begin{itemize}
     \item \(n\) denotes the size of the matrix, representing both the number of rows and columns.
     \item \(m\) signifies the count of non-zero coefficients within the matrix.
-    \item \(K \in \mathcal M_n(\R_+)\) is the matrix requiring balancing, where elements of \(K\) belong to the set of positive real numbers (\(\R_+\)).
-    \item \(\varepsilon\) serves as the parameter governing the accuracy of the balancing process.
+    \item \(K \in \mathcal M_n(\R_+)\) is the matrix requiring balancing.
+    \item \(\varepsilon\) serves as the parameter for the accuracy of the balancing process.
     \item \(G_K\) represents the graph associated with \(K\), and \(d\) stands for its diameter.
     \item The conditioning number of \(K\), denoted by \(\kappa\), is computed as the sum of all elements in \(K\) divided by the minimum non-zero element in \(K\).
     \item The \(\exp\) function is applied in an element-wise manner for both vectors and matrices.
 \end{itemize}
 
-These standardized notations provide a foundation for our discussions, ensuring a seamless and unambiguous presentation of our analyses and findings.
 
 \subsection{Presentation of the method}
 
+The algorithm operates iteratively, selecting column/row pairs and adjusting the scaling factor to ensure that their sums are equal.
 
-\begin{code}
+\begin{figure}[H]
+    \begin{code}
 osborn(|\(K\)|, |\(\varepsilon\)|):
     x = 0 |\(\in \R^n\)|
     while not(is_balanced(|\(\D(e^x) K \D(e^{-x})\)|, |\(\varepsilon\)|)):
         Choose k |\(\in\)| [n] # This is where variants differ
         x += (log(c_k(|\(\D(e^x) K \D(e^{-x})\)|)) - log(r_k(|\(\D(e^x) K \D(e^{-x})\)|)))/2
     return x
-\end{code}
+    \end{code}
+    \caption{Pseudo-code of \textsc{Osborn}'s algorithm.}
+\end{figure}
 
 There are \textit{many} way to choose the next coordinate to update and hence many variants of the algorithm. The article focuses on four of them:
 \begin{itemize}
     \item \textbf{Cyclic \textsc{Osborn}} Cycle through the coordinates. (\textit{eg.} {\color{magenta}1, 2, 3}, {\color{cyan}1, 2, 3}, {\color{red}1,} \dots).
     \item \textbf{Random-Reshuffle Cyclic \textsc{Osborn}} Cycle through the coordinates using a new random permutation for each cycle. (\textit{eg.} {\color{magenta}2, 1, 3}, {\color{cyan}1, 2, 3}, {\color{red}1, 3, 2}, \dots).
-    \item \textbf{Greedy \textsc{Osborn}} Choose \(k\) where the imbalance is maximal \textit{eg.}
+    \item \textbf{Greedy \textsc{Osborn}} Choose \(k\) where the imbalance is maximal \textit{ie.}
     \[
         k = \argmax_{k}\left|\sqrt{r_k(\D(e^x) K \D(e^{-x}))} - \sqrt{c_k(\D(e^x) K \D(e^{-x}))}\right|.    
     \]
@@ -262,9 +263,9 @@ There are \textit{many} way to choose the next coordinate to update and hence ma
 
 \subsubsection{Implementation}
 
-The implementations were carried out in Python, providing us with a transparent and customizable framework for thorough experimentation. The source code for our implementations is available on \href{https://github.com/alexicanesse/Near-linear-convergence-of-the-Random-Osborne-algorithm-for-Matrix-Balancing}{GitHub}. The implementation uses sparse representation for matrices and aimed to provide an implementation using data structures as close as possible as those used to compute the theoretical results. However, we were not able to find a detailed presentation of those and had to do our best to match the article. We did not give any focus on bit complexity. The authors recommanded a log-domain implementation to enable a logarithmic bit-complexity for some variants. However, we decided not to follow through in order to increase speed because we did not worry about bit-complexity.\\
+The implementations were carried out in Python, providing us with a transparent and customizable framework for thorough experimentation. The source code for our implementations is available on \href{https://github.com/alexicanesse/Near-linear-convergence-of-the-Random-Osborne-algorithm-for-Matrix-Balancing}{GitHub}. The implementation uses sparse representation for matrices and aimed to provide an implementation using data structures as close as possible as those used to compute the theoretical results. However, we were not able to find a detailed presentation of those and had to do our best to match the article. We did not give any focus on bit complexity. The authors recommanded a log-domain implementation to enable a logarithmic bit-complexity for some variants and increase numerical stability. However, we decided not to follow through in order to increase speed because we did not worry about bit-complexity.\\
 
-At each update of \(x\), we update the balanced matrix by multiplying the corresponding row and column. With the sparse representation, this operation is proportional to \(m\). It is even \(\mathcal O(m/n)\) on average! To compute the optimization function, the sum of elements in \(DAD^{-1}\) is computed in \(\mathcal O (m)\) thanks to the sparse representation and \(||c(A) - r(A)||_1\) is also computed in \(\mathcal O(m)\). Indeed, we use \(||c(A) - r(A)||_1 = \sum_j \left| \sum_i (DAD^{-1} - (DAD^{-1})^\top)_{i,j}\right|\). \textbf{Those techniques are not presented in the article and we had to come up with on our own.}\\
+At each update of \(x\), we update the balanced matrix by multiplying the corresponding row and column. With the sparse representation, this operation is proportional to \(m\). It is even \(\mathcal O(m/n)\) on average! To compute the optimization function, the sum of elements in \(DAD^{-1}\) is computed in \(\mathcal O (m)\) thanks to the sparse representation and \(||c(DAD^{-1}) - r(DAD^{-1})||_1\) is also computed in \(\mathcal O(m)\). Indeed, we use \(||c(DAD^{-1}) - r(DAD^{-1})||_1 = \sum_j \left| \sum_i (DAD^{-1} - (DAD^{-1})^\top)_{i,j}\right|\). \textbf{Those techniques are not presented in the article and we had to come up with on our own.}\\
 
 \subsection{Matrix balancing as a convex optimization problem}
 
@@ -278,6 +279,8 @@ We can clearly notice a connection with \Cref{norm} and see that \(x\) is a solu
 Alexandre d'Aspremont says in his MVA course on convex optimization that writing a problem as a convex optimization problem is almost solving it, which shows how important this statement is.
 
 \subsection{Theoretical guarantees}\label{theoritical}
+
+In this section, we present the theorems from the article without providing proofs, as their derivation relies heavily on the content of the original article.
 
 \begin{lemma}\label{balanceability}
     A matrix \(K \in \mathcal M_n(\R_+^\star)\) is balanceable if and only if its associated graph is strongly connected~\cite{osborne1960pre}.
@@ -308,7 +311,7 @@ Computing numeric experiments was not easy. Getting the actual number of arithme
 
 \subsubsection{Data generation}\label{data_genaration}
 
-In order to conduct numerical experiments, it is useful to be able to generate matrices with given parameters such as value of \(\kappa\) and sparsity. For that, we start by generating a \((n,n)\) random matrix with \(m\) non-zero values using \mintinline{python}{scipy.sparse.random}. Then we assign values to those non-zero entries according to a \textsc{exponential} distribution of scale 1. We then want to modify those values to get the expected value for \(\kappa\). To do so, we add a value \(x\) to all non-zeros entries. If the generated matrix was \(K\), to find \(x\), we solve 
+In order to conduct numerical experiments, it is useful to be able to generate matrices with given parameters such as value of \(\kappa\) and sparsity. For that, we start by generating a \((n,n)\) random matrix with \(m\) non-zero values using \mintinline{python}{scipy.sparse.random}. Then we assign values to those non-zero entries according to an exponential distribution of scale 1. We then want to modify those values to get the expected value for \(\kappa\). To do so, we add a value \(x\) to all non-zeros entries. If the generated matrix was \(K\), to find \(x\), we solve 
 \[
     \kappa = \dfrac{\sum_{i,j} K_{i,j} + m \times x}{K_{\text{min}} + x}.
 \]        
@@ -389,7 +392,9 @@ In order to experimentally show the convergence speed of theorems presented in~\
     \caption{Plot of \(\text{avg}(\text{time}/(\min(d, 1/\varepsilon)\log(\kappa)/\varepsilon))\) as a function of \(m\), using various variations with \(\varepsilon = 10^{-2}\) and \(n = 60\). Matrices are generated according to the framework presented in \Cref{data_genaration}. Forall \(m \in \inte 60 300 \), we generate 10 matrices of size \(n\) and sparsity \(m\).}\label{fig:m}
 \end{figure}
 
-Interpreting the plots in~\Cref{fig:m} using the theorems outlined in~\Cref{theoritical} poses challenges due to intrinsic connections between certain variables, such as \(d\) and \(m\) in the results. The expectation, based on~\Cref{greedy_thm}, is that the plot using the greedy \textsc{Osborn} method should remain flat, indicating no dependence on \(m\). However, contrary to this theoretical expectation, the observed plot does not exhibit this characteristic. A more nuanced understanding is provided by~\Cref{fig:m1}, where the relationship between~\Cref{fig:mc} and~\Cref{fig:m1a} suggests non-monotonic behavior.
+Interpreting the plots in~\Cref{fig:m} using the theorems outlined in~\Cref{theoritical} poses challenges due to intrinsic connections between certain variables, such as \(d\) and \(m\) in the results. The expectation, based on~\Cref{greedy_thm}, is that the plot using the greedy \textsc{Osborn} method should remain flat, indicating no dependence on \(m\). However, contrary to this theoretical expectation, the observed plot does not exhibit this characteristic. A more nuanced understanding is provided by~\Cref{fig:m1}, where the relationship between~\Cref{fig:mc} and~\Cref{fig:m1a} suggests non-monotonic behavior.\\
+
+Specifically, as~\Cref{fig:m1a} decreases,~\Cref{fig:mc} increases, and vice versa, elucidating the non-monotonous trend observed. Additionally, insights from~\Cref{fig:m1b} contribute to an understanding of why the scaled time is decreasing overall for the greedy variant. Similar principles apply to the interpretation of the other plots. Notably, the random variant appears to be less affected by overall trends, suggesting a higher dependency on \(m\).\\
 
 \begin{figure}[H]
     \centering
@@ -406,8 +411,6 @@ Interpreting the plots in~\Cref{fig:m} using the theorems outlined in~\Cref{theo
     \end{subfigure}
     \caption{Plots of \(\text{avg}(d)\) and \(\text{avg}(\log\kappa)\) as a function of \(m\), using \(n = 60\) and the framework presented in \Cref{data_genaration}. Forall \(m \in \inte 60 300 \), we generate 10 matrices of size \(n\) and sparsity \(m\).}\label{fig:m1}
 \end{figure}
-
-Specifically, as~\Cref{fig:m1a} decreases,~\Cref{fig:mc} increases, and vice versa, elucidating the non-monotonous trend observed. Additionally, insights from~\Cref{fig:m1b} contribute to an understanding of why the scaled time is decreasing overall for the greedy variant. Similar principles apply to the interpretation of the other plots. Notably, the random variant appears to be less affected by overall trends, suggesting a higher dependency on \(m\).\\
 
 Unfortunately, the observed plots do not align with our expectations. They fail to exhibit a clear linear dependency for the three variants, contrary to the anticipated linear relationship.
 
@@ -475,7 +478,7 @@ In order to generate the matrices on which we will use the algorithms, we decide
 \[
     \forall i,j \quad K_{i,j} = \exp\left( -\dfrac{C_{i,j}}{\varepsilon_K} \right).
 \]
-We decided to use such kernels because it allows us to test our algorithms on real use cases while being able change parameters such as \(C\) and \(\varepslion_K\) in order to get kernels with various properties.
+We decided to use such kernels because it allows us to test our algorithms on real use cases while being able change parameters such as \(C\) and \(\varepsilon_K\) in order to get kernels with various properties.
 
 \begin{figure}[H]
     \centering
@@ -685,7 +688,7 @@ In the context of this paper, several notions, results, and algorithms presented
     \[
     U(a,b) := \left\{P \in \mathcal M_{n,m}(\R_+) \ | P\mathbf{1}_m = a \ \text{and}\ P^\top\mathbf{1}_n = b \right\}.
     \]
-    \textsc{Osborn}'s algorithm provides assignments in \(U(a,a)\), although \(a\) is an output of the algorithm, and it may not sum to 1 initially. The connection here emphasizes the role of mass conservation.
+    \textsc{Osborn}'s algorithm provides assignments in \(U(a,a)\), although \(a\) is an output of the algorithm, and it will not sum to 1.
     \item Optimal Transport as a Distance:\\
     
     There is a link to the notion that optimal transport can define a distance. While \textsc{Sinkhorn}'s algorithm is practically employed to define a distance~\cite{NIPS2013_af21d0c9, qian2016non}, and given its close relation to \textsc{Osborn}'s algorithm, attempts were made to find analogous definitions. However, these attempts were unsuccessful.
@@ -701,9 +704,7 @@ In the context of this paper, several notions, results, and algorithms presented
     Unbalanced optimal transport is another area of connection. The notion of optimal transport defined without exact mass conservation serves as inspiration for the use of \textsc{Osborn} in the context of optimal transport problems. The application of \textsc{Osborn} in scenarios where mass conservation is not strictly enforced aligns with unbalanced optimal transport formulations.
 \end{itemize}
 
-These connections underscore the versatility and adaptability of \textsc{Osborn}'s algorithm, allowing it to find relevance and application in various areas related to optimal transport and related problems discussed in the course.
 
-\newpage
 \printbibliography[heading=bibintoc]
 
 \end{document}

@@ -147,43 +147,22 @@
 \makeatother
 \newpage
 
-\vspace*{10pt}
-\todo[inline, caption={Abstract}]{Abstract (½ page): 
-    What problems is studied? 
-    Why is it relevant? 
-    What solutions is proposed? 
-    Which contributions (theory, numerics, etc)? }
-% \begin{adjustwidth}{30pt}{30pt}
-%     \textit{
-%         Accurate physics simulations can be computationally expensive due to the requirement of fine meshes.
-%         However, a cost-effective approach involves reducing the mesh size while retaining crucial features required
-%         for the simulation.
-%         Some of these features are conveniently represented in the spectra of Laplacians operators defined on the mesh.
-%         There exists a coarsening method that filters out unnecessary spectral bands.
-%         The challenge lies in determining which spectral bands are important for the simulation, as \textbf{this information is
-%         largely unknown}.
-%     }\\
+\section*{Abstract}
+% \vspace*{10pt} 
+\begin{adjustwidth}{30pt}{30pt}
+     \textit{
+        We dived in matrix balancing, a crucial task with diverse applications such as an increased stability in eigen-spaces decomposition, and introduces \textsc{Osborn}'s algorithm along with its variants. The focus is on presenting both the theoretical foundations and practical implementation aspects. A comprehensive guide to achieving an efficient implementation is provided, supported by clean, openly available code.
+     }\\
 
-%     \textit{
-%         To address this, we propose a \textbf{novel approach} to guide the coarsening process using \textbf{insights
-%         from physical simulations}.
-%         By learning the spectral subspaces that significantly influence the simulation outcomes, we can create a coarse
-%         mesh that retains the characteristics essential for an accurate simulation.
-%         Main contributions are:
-%         \begin{itemize}
-%             \item A novel spectral optimization method for coarsening, with physical simulations in mind.
-%             \item Understanding importance of spectral subspaces: By understanding the spectral subspaces that contribute
-%             the most to the simulations, we gain valuable insights into the underlying physics and behavior of the system.
-%             \item Faster simulation times: The reduced mesh size leads to a considerable speed-up in the simulation
-%             process, making it more efficient and feasible for practical applications.
-%         \end{itemize}
-%     }
-% \end{adjustwidth}
+     \textit{
+        Theoretical results, fundamental to the article, are presented: near-linear convergence. They are showcased through numerical experiments, demonstrating relative success in illustrating their complexities. Furthermore, a connection is established between \textsc{Osborn}'s and \textsc{Sinkhorn}'s algorithms, leading to a thorough comparative analysis across various types of kernels for matrix balancing. The findings highlight instances where \textsc{Sinkhorn} encounters challenges, contrasting with \textsc{Osborn}'s consistent convergence across variants. Leveraging these insights, a compelling demonstration is presented where \textsc{Osborn} excels while \textsc{Sinkhorn} struggles and fails to converge in a constructed kernel.
+     }
+\end{adjustwidth}
 \vspace*{10pt}
 
-\section{Introduction (3 pages)}
+\section{Introduction}
 
-\cite{altschuler2023near}
+The article we dived into for our project~\cite{altschuler2023near} introduces \textsc{Osborn}'s algorithm, a matrix balancing algorithm widely employed in preconditioning matrices for tasks such as eigen-decomposition. The authors provided a significant contribution by proving near-linear runtime in the sparsity of the input matrix. This achievement does not enhances the algorithm's efficiency but gives us a better understanding of its performances.
 
 \subsection{Presentation of the problem}
 
@@ -204,11 +183,11 @@ Other problems can be reduced to matrix balancing, which gives direct applicatio
 
 \defn{Let \(A \in \M_n(\R_+)\) be a non negative square matrix, \(\varepsilon \geq 0\) and \(k \in \N^\star\). The matrix \(A\) is \((\varepsilon, k\)\)-balanced if 
 \begin{align}\label{norm}
-    \dfrac{||c(A) - r(A)||_k}{\sum_{i,j} a_{i,j}} \leq 0.
+    \dfrac{||c(A) - r(A)||_k}{\sum_{i,j} a_{i,j}} \leq \varepsilon.
 \end{align}
 Furthermore, if \(A\) is \((0, k)\)-balanced, we say that \(A\) is balanced.}
 
-\defn{The \(\varepsilon, k\)-\textbf{approximate matrix balancing problem} is: given a square non-negative matrix \(K \in \M_n(\R_+)\), \(\varepsilon \geq 0\) and \(k \in \N^\star\), find a vector \(x \in \R^n\) such that \(\mathcal D(e^x)K\mathcal D(e^{x})\) is \((\varepsilon, k)\)-balanced.}
+\defn{The \(\varepsilon, k\)-\textbf{approximate matrix balancing problem} is: given a square non-negative matrix \(K \in \M_n(\R_+)\), \(\varepsilon \geq 0\) and \(k \in \N^\star\), find a vector \(x \in \R^n\) such that \(\mathcal D(e^x)K\mathcal D(e^{-x})\) is \((\varepsilon, k)\)-balanced.}
 
 \subsection{Related work}
 
@@ -241,6 +220,22 @@ optimization ?
 \section{Main body (10 pages)}
 
 \subsection{Notations}
+
+Certainly, here is the revised subsection:
+
+For convenience and clarity, we consolidate the notations used throughout our discussions. These notations adhere to standard conventions, ensuring consistency and facilitating a concise representation of key elements:
+
+\begin{itemize}
+    \item \(n\) denotes the size of the matrix, representing both the number of rows and columns.
+    \item \(m\) signifies the count of non-zero coefficients within the matrix.
+    \item \(K \in \mathcal M_n(\R_+)\) is the matrix requiring balancing, where elements of \(K\) belong to the set of positive real numbers (\(\R_+\)).
+    \item \(\varepsilon\) serves as the parameter governing the accuracy of the balancing process.
+    \item \(G_K\) represents the graph associated with \(K\), and \(d\) stands for its diameter.
+    \item The conditioning number of \(K\), denoted by \(\kappa\), is computed as the sum of all elements in \(K\) divided by the minimum non-zero element in \(K\).
+    \item The \(\exp\) function is applied in an element-wise manner for both vectors and matrices.
+\end{itemize}
+
+These standardized notations provide a foundation for our discussions, ensuring a seamless and unambiguous presentation of our analyses and findings.
 
 \subsection{Presentation of the method}
 
@@ -448,25 +443,6 @@ Finally, same experiments were ran to showcase the linear dependency in \(\log\k
     \caption{Plot of \(\text{avg}(\text{time}/(\min(d, 1/\varepsilon)/\varepsilon))\) as a function of \(\kappa\), using various variations with \(\varepsilon = 10^{-2}\), \(n = 10\) and \(m = 30\). Matrices are generated according to the framework presented in \Cref{data_genaration}. Forall \(\kappa \in \inte 40 10^6 \), we generate 10 matrices of size \(n\) and sparsity \(m\).}\label{fig:kappa}
 \end{figure}
 
-\subsubsection{Convergence plot}
-
-
-
-\subsubsection{Per iteration runtime}
-
-Only if I have time
-
-\subsection{Applications}
-
-\subsubsection{Displacement Interpolation}
-\cite{peyre2011numerical}
-
-Discrete barycenters 9.4 ?
-
-\subsection{Optimal mass distribution using \textsc{Osborn}}
-
-Given a mass distribution and a cost matrix we can compute optimal mass distribution to the second set
-
 \subsection{Connections between \textsc{Osborn}'s and \textsc{Sinkhorn}'s algorithms}
 
 A connection with \textsc{Sinkhorn}'s Algorithm must be drawn. Those two algorithms compute a scaling of a matrix. The main difference is \textsc{Osborn} returns a scaling of the form \(D A D^{-1}\) whereas \textsc{Sinkhorn} returns a scaling of the form \(XAY\) with \(X\) and \(Y\) diagonals.\\
@@ -481,38 +457,251 @@ using notations from the course. Unlike with \textsc{Osborn}'s algorithm, we do 
 
 \textsc{Osborn}'s algorithm does not compute an optimal transport. We tried to modify it to be able to use it to compute optimal transport solutions. However, we failed to do so. It still has some advantages : its scaling has a form that preserves eigenspaces.\\
 
-We still wanted to compare those algorithms and the only way we found is to use that \textsc{Sinkhorn}'s algorithm can be used as a balancing algorithm: we just have to use the same distribution as input and output for it. This comparaison is not fair because \textsc{Sinkhorn}'s additional has more constrains as we impose the value of the sum of the rows and columns and also because it is more versatile in general.
+We still wanted to compare those algorithms and the only way we found is to use that \textsc{Sinkhorn}'s algorithm can be used as a balancing algorithm: we just have to use the same distribution as input and output for it. This comparaison is not fair because \textsc{Sinkhorn}'s additional has more constrains as we impose the value of the sum of the rows and columns and also because it is more versatile in general.\\
+
+Those two algorithms are really similar. Hence, we will use the number of iteration to compare them. We are using an implementation of \textsc{Sinkhorn}'s algorithm from numerical tours of the course~\cite{peyre2011numerical} and use the stopping criteria of \textsc{Osborn}'s algorithm:
+\[
+    \dfrac{||c(A) - r(A)||_k}{\sum_{i,j} a_{i,j}} \leq \varepsilon.
+\]
+This criterion is justified for \textsc{Sinkhorn}'s algorithm too because we are running it with the same distribution as input and output.\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.3\textwidth]{figures/data_sinkhorn}
+    \caption{Data used for our experiments on entropic regularization. The outer set is generated using 30 regularly placed points on a circle of radius one centred at the origine. We added a Gaussian noise on each point with a scale of \(6.10^{-2}\). The inner set is generated by placing regularly 10 points on each edges of an equilateral triangle with edges of length \(\sqrt{3}/3\). We added a Gaussian noise on each point with a scale of \(10^{-2}\).}\label{data}
+\end{figure}
+
+In order to generate the matrices on which we will use the algorithms, we decided to use kernels from entropic regularization in optimal transport. We took inspiration from the numerical tours in the course~\cite{peyre2011numerical}. Given a ground cost matrix \(C\), the kernel \(K\) is defined by 
+\[
+    \forall i,j \quad K_{i,j} = \exp\left( -\dfrac{C_{i,j}}{\varepsilon_K} \right).
+\]
+We decided to use such kernels because it allows us to test our algorithms on real use cases while being able change parameters such as \(C\) and \(\varepslion_K\) in order to get kernels with various properties.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_0.001/osborn_vs_sinkhorn_dist2_0.001_0.01}
+        \caption{\(\varepsilon = 10^{-2}\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_0.001/osborn_vs_sinkhorn_dist2_0.001_0.0001}
+        \caption{\(\varepsilon = 10^{-5}\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_0.001/osborn_vs_sinkhorn_dist2_0.001_1e-08}
+        \caption{\(\varepsilon = 10^{-8}\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_0.001/osborn_vs_sinkhorn_dist2_0.001_1e-12}
+        \caption{\(\varepsilon = 10^{-12}\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_0.001/osborn_vs_sinkhorn_dist2_0.001_1e-16}
+        \caption{\(\varepsilon = 10^{-16}\)}
+    \end{subfigure}
+    \caption{Convergence Analysis of \textsc{Osborn}'s and \textsc{Sinkhorn}'s Algorithms in the Regular Entropic Regularization Setting. The analysis utilizes data from~\Cref{data} with a regularization parameter \(\varepsilon_K\) set to \(10^{-3}\).}\label{fig:firstkernel}
+\end{figure}
+
+The~\Cref{fig:firstkernel} shows a first application of the algorithms, including variants of \textsc{Osborn}'s algorithm. We can see that all variants tends to have the same behaviors. This will be confirmed by the following experiments. However, \textsc{Sinkohorn}'s algorithm tends to have a different comportment, it looks more continuous.
 
 
+\subsubsection{Using different regularization parameters}
 
+The regularization parameter \(\varepsilon_K\) has a high impact on the final result. However, this is not what we are looking for here. We are interested in how its impact on \(K\) impacts the convergence of the algorithms. A smaller value ok \(\varepsilon_K\) means that \(C/\varepsilon_K\) will have larger values. The matrix \(C\) has non-negative values, hence smaller values of the regularization parameter will reduce the gap between values in \(K\).
 
-\cite{peyre2011numerical}
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.23\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_kernel_1e-12/osborn_vs_sinkhorn_dist2_1.0_1e-12}
+        \caption{\(\varepsilon_K = 10^{0}\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.23\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_kernel_1e-12/osborn_vs_sinkhorn_dist2_0.1_1e-12}
+        \caption{\(\varepsilon_K = 10^{-1}\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.23\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_kernel_1e-12/osborn_vs_sinkhorn_dist2_0.01_1e-12}
+        \caption{\(\varepsilon_K = 10^{-2}\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.23\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_kernel_1e-12/osborn_vs_sinkhorn_dist2_0.001_1e-12}
+        \caption{\(\varepsilon_K = 10^{-3}\)}
+    \end{subfigure}
+    \caption{Convergence Analysis of \textsc{Osborn}'s and \textsc{Sinkhorn}'s Algorithms with Varied Regularization Parameters. The study explores the convergence behavior of both algorithms using different regularization parameters, leveraging data from~\Cref{data}.}\label{fig:regularization}
+\end{figure}
 
+The illustration in~\Cref{fig:regularization} provides insights into how the spacing of values in the kernel influences the effectiveness of the algorithms. Notably, when all values in the kernel are closely distributed, \textsc{Sinkhorn}'s algorithm gains an advantage, while a larger gap between values tends to pose challenges for its performance. Variants of \textsc{Osborn}'s algorithm exhibit consistent behavior across multiple runs. As anticipated, the greedy variant showcases superior per-iteration improvement. Interestingly, despite the distinct characteristics and varying performance of these algorithms, they demonstrate a similar asymptotic convergence rate, a finding that brings about a degree of surprise.
 
-Approximate solution using Osborn (Can easily compute optimal solution using (1.1))
+\subsubsection{Using different \textsc{Minkowski} distances}\label{minkow}
 
-Osborn before SInkhorn ?
+The regular distance matrix is constructed based on the square of the Euclidean distance, equivalent to the square of the 2-\textsc{Minkowski} distance. To investigate the impact of altering this parameter, we decided to explore how the algorithms respond to variations in this parameter. The cost matrix is then defined, for a parameter \(p \geq 0\), as follows:
+\[
+    \forall i,j \quad C_{i,j} = \sum_{k} \left|x_{i,k} - y_{i,k}\right|^p.
+\]
 
+Intuitively, when \(p\) is in the range \(]0, 1]\), values close to zero become more pronounced, leading to a reduction in the overall scale. On the other hand, larger values of \(p\) cause values in \([0, 1[\) to approach zero, and those higher than 1 to become considerably larger. 
 
-Osborn as a measure ? Read about Sinkhorn as a measure ?
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/minkowski/osborn_vs_sinkhorn_dist2_0.01_1e-10_0.5_0.5}
+        \caption{\(p = 0.5\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/minkowski/osborn_vs_sinkhorn_dist2_0.01_1e-10_1_1}
+        \caption{\(p = 1\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/minkowski/osborn_vs_sinkhorn_dist2_0.01_1e-10_5_5}
+        \caption{\(p = 5\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/minkowski/osborn_vs_sinkhorn_dist2_0.01_1e-10_10_10}
+        \caption{\(p = 10\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/minkowski/osborn_vs_sinkhorn_dist2_0.01_1e-10_50_50}
+        \caption{\(p = 50\)}
+    \end{subfigure}
+    \caption{Convergence Analysis of \textsc{Osborn}'s and \textsc{Sinkhorn}'s Algorithms with Varied \textsc{Minkowski} distances and \(\varepsilon_K = 10^{-2}\). The investigation explores how different parameters of a \textsc{Minkowski} distance impact the convergence behavior of both algorithms, utilizing data from~\Cref{data}.}
+\end{figure}
 
+As \(p\) increases, both algorithms exhibit a trend where fewer iterations are needed. All variants of \textsc{Osborn}'s algorithm respond uniformly to this trend and show resilience without apparent failures. However, \textsc{Sinkhorn}'s algorithm encounters challenges, particularly when \(p\) decreases, and it faces convergence issues, being unable to converge for \(p = 0.5\). This observation reinforces the notion that \textsc{Sinkhorn} tends to underperform in scenarios characterized by numerous small values.
+
+\subsubsection{Using different powers of a given distance}
+
+The experiment detailed in~\Cref{minkow} presented intriguing findings. However, it's essential to acknowledge that when \(p\) changes, the matrix's structure itself may undergo substantial alterations due to its impact on the differences between every pair of coordinates. To mitigate this, we opted for a different approach. We selected a specific cost—namely, the squared Euclidean distance—and applied an element-wise power to it. Subsequently, for all parameters \(k\), we defined the cost matrix as follows:
+\[
+    \forall i,j \quad C_{i,j} = \left(\sum_l (x_{i,l} - y_{j,l})^2\right)^k.
+\]
+
+The parameter \(k\) introduces an element-wise scaling, thereby influencing the previously introduced parameter \(\kappa\). This adjustment allows us to investigate the impact of element-wise scaling on the algorithms' behavior, providing additional insights into their sensitivity to different cost structures.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_k/osborn_vs_sinkhorn_dist2_0.01_1e-10_2_0.1}
+        \caption{\(k = 0.1\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_k/osborn_vs_sinkhorn_dist2_0.01_1e-10_2_0.5}
+        \caption{\(k = 0.5\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_k/osborn_vs_sinkhorn_dist2_0.01_1e-10_2_1}
+        \caption{\(k = 1\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_k/osborn_vs_sinkhorn_dist2_0.01_1e-10_2_5}
+        \caption{\(k = 5\)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.18\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/dist2_k/osborn_vs_sinkhorn_dist2_0.01_1e-10_2_10}
+        \caption{\(k = 20\)}
+    \end{subfigure}
+    \caption{Convergence Analysis of \textsc{Osborn}'s and \textsc{Sinkhorn}'s Algorithms with Varied Distance Powers and \(\varepsilon_K = 10^{-2}\). The investigation explores how different powers of a distance impact the convergence behavior of both algorithms, utilizing data from~\Cref{data}.}\label{k}
+\end{figure}
+
+The observed results in~\Cref{k} indicate a preference for smaller values of \(k\) by all algorithms, contributing to the compression of costs. This preference aligns with the characteristic that all Euclidean distances in our dataset are greater than one. Notably, \textsc{Sinkhorn}'s algorithm is notably more affected by variations in \(k\), highlighting its sensitivity to changes in the element-wise scaling parameter. 
+
+\subsubsection{Using other distances} 
+
+For our final experiment, we aimed to leverage the insights gathered from previous experiments to construct a cost matrix that would favor \textsc{Osborn} while challenging \textsc{Sinkhorn}, validating our intuitive understanding.\\
+
+Firstly, we constructed a distance matrix using the square Euclidean norm and normalized it by its maximum value. This yielded a matrix with values in the range \(]0,1]\). Subsequently, values below \(0.3\) were set to zero. The thresholded values at 0 were then transformed: those set to 0 were mapped to 1 upon exponentiation, while other non-zero values became extremely small in comparison (\(\leq 1^{-20}\)). This deliberate manipulation resulted in an extremely ill-balanced matrix.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/sparse_test/K.pdf}
+        \caption{The kernel \(K\).}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/sparse_test/conv}
+        \caption{Convergence of the criterion.}
+    \end{subfigure}
+    \caption{Matrix Balancing with \textsc{Osborn} and \textsc{Sinkhorn} Algorithms. The kernel is derived from data in~\Cref{data}. We construct a distance matrix \(D\) by computing the squared Euclidean norm and normalizing it by its maximum value. Subsequently, values below \(0.3\) are thresholded to 0. The kernel \(K\) is then defined as \(K = \exp(-C/\varepsilon_K)\) with \(\varepsilon_K = 10^{-2}\). It is important to note that \(K\) excludes any inputs equal to 0.}\label{ill}
+\end{figure}
+
+This experiment yielded successful outcomes, as evident in~\Cref{ill}. \textsc{Osborn} demonstrated convergence with a relatively small number of iterations, whereas \textsc{Sinkhorn} not only struggled but failed to converge entirely. These results provide further support for our earlier intuitions and observations regarding the algorithms' sensitivity to specific cost matrix structures.
+
+\subsubsection{Conclusion}
+
+Exploring various regularization parameters, \textsc{Minkowski} distances, powers, and other distances, we observed distinct behaviors. Notably, \textsc{Sinkhorn}'s sensitivity to parameter variations, especially in ill-balanced matrices, raises questions about its robustness in certain scenarios.
 
 \section{Conclusion and perspective}
 
-Summary of the result obtained: pros and cons (limitation, problems, error in the articles, etc)
-Possible improvement/extension 
+We presented matrix balancing and its practical applications, with a specific emphasis on introducing \textsc{Osborn}'s algorithm and its variants as outlined in this article. We provided a comprehensive explanation of the steps required for an efficient implementation, and the clean code is made publicly available on GitHub. However, it's worth noting that the original article lacked a detailed discussion on achieving efficiency, particularly in terms of temporal and spatial complexity. The absence of explicit data structures or supporting resources for their claims was a notable limitation.\\
+
+The theoretical results, pivotal to the article, were presented and complemented with numerical experiments, yielding relative success in showcasing their convergence rate.\\
+
+Moreover, we established a connection between \textsc{Osborn}'s and \textsc{Sinkhorn}'s algorithms, conducting a comparative analysis across various types of kernels for matrix balancing. Our findings illustrated instances where \textsc{Sinkhorn} encounters challenges. Notably, we demonstrated that \textsc{Osborn}'s convergence remains consistent across variants, with a consistent ranking of the number of iterations required in every case. Leveraging these results, we successfully constructed a kernel where \textsc{Osborn} excels while \textsc{Sinkhorn} struggles and fails to converge.
 
 \section{Connexion with the course}
 
-MANDATORY SECTION:. What are the notions/results/algorithms presented in the course that are used or related to the one presented in this paper?
+In the context of this paper, several notions, results, and algorithms presented in the course are either used or related, although the connections may sometimes be nuanced due to the unique characteristics of \textsc{Osborn}'s algorithm. The exploration follows a chronological order:
 
-Osborn gives solutions valable in the context of \textsc{Kantorovich} discrete relaxation : \(\text{Osborn}(K) \in \bibcup_a U(a,a)\) (does not need to be a permutation). 
+\begin{itemize}
+    \item Kantorovich Relaxation:\\
+    
+    The concept of \textsc{Kantorovich} relaxation is foundational. Admissible couplings are required only to satisfy mass conservation. For two discrete mass distributions \(a\) and \(b\), the set \(U(a,b)\) is defined as:
+    \[
+    U(a,b) := \left\{P \in \mathcal M_{n,m}(\R_+) \ | P\mathbf{1}_m = a \ \text{and}\ P^\top\mathbf{1}_n = b \right\}.
+    \]
+    \textsc{Osborn}'s algorithm provides assignments in \(U(a,a)\), although \(a\) is an output of the algorithm, and it may not sum to 1 initially. The connection here emphasizes the role of mass conservation.
+    \item Optimal Transport as a Distance:\\
+    
+    There is a link to the notion that optimal transport can define a distance. While \textsc{Sinkhorn}'s algorithm is practically employed to define a distance~\cite{NIPS2013_af21d0c9, qian2016non}, and given its close relation to \textsc{Osborn}'s algorithm, attempts were made to find analogous definitions. However, these attempts were unsuccessful.
+    \item \text{Sinkhorn}'s Algorithm:
+    
+    The connection to \textsc{Sinkhorn}'s algorithm is evident. Both algorithms perform matrix scaling but with different objectives. The report extensively evaluates the connections between these two algorithms.
+    \item Discrete Barycenters:\\
+    
+    The concept of discrete barycenters is linked to \textsc{Osborn} through a modified problem. Considering the optimization problem involving discrete barycenters, one could run \textsc{Osborn} on a modified problem inspired by the use of \textsc{Sinkhorn} for barycenters. This connection suggests potential applications of \textsc{Osborn} in barycenter-related scenarios.
 
-Sinkhorn
+    \item Unbalanced Optimal Transport:\\
+    
+    Unbalanced optimal transport is another area of connection. The notion of optimal transport defined without exact mass conservation serves as inspiration for the use of \textsc{Osborn} in the context of optimal transport problems. The application of \textsc{Osborn} in scenarios where mass conservation is not strictly enforced aligns with unbalanced optimal transport formulations.
+\end{itemize}
 
-Unblanced OT
-
-\listoftodos{}
+These connections underscore the versatility and adaptability of \textsc{Osborn}'s algorithm, allowing it to find relevance and application in various areas related to optimal transport and related problems discussed in the course.
 
 \newpage
 \printbibliography[heading=bibintoc]
